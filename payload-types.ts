@@ -308,7 +308,8 @@ export interface Testimonial {
  */
 export interface Media {
   id: number;
-  alt: string;
+  alt?: string | null;
+  caption?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -617,6 +618,7 @@ export interface TestimonialsSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  caption?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -709,8 +711,28 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface SiteSetting {
   id: number;
-  brandName: string;
-  tagline?: string | null;
+  branding: {
+    brandName: string;
+    logoIconText?: string | null;
+    tagline?: string | null;
+  };
+  navItems?:
+    | {
+        label: string;
+        url: string;
+        hasDropdown?: boolean | null;
+        dropdownItems?:
+          | {
+              title: string;
+              url: string;
+              description?: string | null;
+              badge?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
   headerCta?: {
     label?: string | null;
     url?: string | null;
@@ -720,8 +742,10 @@ export interface SiteSetting {
     email?: string | null;
     address?: string | null;
   };
-  footerDescription?: string | null;
-  copyrightText?: string | null;
+  footer?: {
+    description?: string | null;
+    copyright?: string | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -730,8 +754,30 @@ export interface SiteSetting {
  * via the `definition` "site-settings_select".
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
-  brandName?: T;
-  tagline?: T;
+  branding?:
+    | T
+    | {
+        brandName?: T;
+        logoIconText?: T;
+        tagline?: T;
+      };
+  navItems?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        hasDropdown?: T;
+        dropdownItems?:
+          | T
+          | {
+              title?: T;
+              url?: T;
+              description?: T;
+              badge?: T;
+              id?: T;
+            };
+        id?: T;
+      };
   headerCta?:
     | T
     | {
@@ -745,8 +791,12 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         email?: T;
         address?: T;
       };
-  footerDescription?: T;
-  copyrightText?: T;
+  footer?:
+    | T
+    | {
+        description?: T;
+        copyright?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

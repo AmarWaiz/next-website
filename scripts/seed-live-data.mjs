@@ -29,8 +29,29 @@ async function seedLiveData() {
     method: 'POST',
     headers: authHeaders,
     body: JSON.stringify({
-      brandName: 'TechCentera',
-      tagline: 'Governed AI Automation & Custom Enterprise Software',
+      branding: {
+        brandName: 'TechCentera',
+        logoIconText: 'TC',
+        tagline: 'Governed AI Automation & Custom Enterprise Software',
+      },
+      navItems: [
+        { label: 'Home', url: '/' },
+        {
+          label: 'Services',
+          url: '/services',
+          hasDropdown: true,
+          dropdownItems: [
+            { title: 'All Services Hub', url: '/services', description: 'Explore the full AI & custom engineering platform', badge: 'Hub' },
+            { title: 'AI Receptionist', url: '/services/ai-receptionist', description: '24/7 autonomous intake, scheduling & routing' },
+            { title: 'AI Customer Support', url: '/services/ai-customer-support', description: 'Tier-1 resolution with governed human escalation' },
+            { title: 'AI Workflow Automation', url: '/services/ai-workflow-automation', description: 'ERP/CRM bi-directional sync & event pipelines' },
+            { title: 'Custom CRM & ERP', url: '/services/custom-crm-erp', description: 'Bespoke systems built to your exact data model' },
+          ],
+        },
+        { label: 'About', url: '/about' },
+        { label: 'Blog', url: '/blog' },
+        { label: 'Contact', url: '/contact' },
+      ],
       headerCta: {
         label: 'Book a Consultation',
         url: '/contact',
@@ -40,87 +61,15 @@ async function seedLiveData() {
         email: 'contact@techcentera.com',
         address: '625 Orange Street, Suite 231B, Wilmington DE 19801',
       },
-      footerDescription:
-        'Governed AI automation and custom software engineering for mid-market and enterprise operations. Zero vendor lock-in. Full IP ownership.',
-      copyrightText: '© 2026 TechCentera Inc. All rights reserved.',
+      footer: {
+        description: 'Governed AI automation and custom software engineering for mid-market and enterprise operations. Zero vendor lock-in. Full IP ownership.',
+        copyright: '© 2026 TechCentera Inc. All rights reserved.',
+      },
     }),
   });
   console.log('✅ Site Settings updated.');
 
-  // 2. Seed Pages: Homepage
-  console.log('Seeding Homepage document in Pages collection...');
-  await fetch('http://localhost:3000/api/pages', {
-    method: 'POST',
-    headers: authHeaders,
-    body: JSON.stringify({
-      title: 'Homepage',
-      slug: 'home',
-      metaDescription: 'Governed AI Automation & Custom Enterprise Software engineering for mid-market operations.',
-      hero: {
-        badge: 'ENTERPRISE GOVERNED AI & CUSTOM SOFTWARE',
-        headline: 'Governed AI Automation & Custom Enterprise Software.',
-        description:
-          'We engineer bespoke conversational AI receptionists, autonomous workflow pipelines, and custom ERP systems for mid-market operations. Zero vendor lock-in. Full IP ownership.',
-        primaryButton: {
-          label: 'Book a Consultation',
-          url: '/contact',
-        },
-        secondaryButton: {
-          label: 'Explore Live Systems',
-          url: '/services',
-        },
-        trustPoints: [
-          { text: 'Zero Vendor Lock-In' },
-          { text: '100% Code Ownership' },
-          { text: 'Sub-500ms Execution' },
-        ],
-      },
-      stats: [
-        { value: '< 500ms', label: 'Voice Response Latency', description: 'Deterministic sub-second voice synthesis.' },
-        { value: '99.4%', label: 'Extraction Accuracy', context: 'Zero hallucinated booking or data slots.' },
-        { value: '65%+', label: 'Tier-1 Ticket Deflection', description: 'Immediate resolution without human touch.' },
-        { value: '$180k+', label: 'Average Annual Savings', description: 'Eliminating recurring SaaS seat taxes.' },
-      ],
-      differentiators: [
-        {
-          title: 'Deterministic Guardrails',
-          description: 'We reject unconstrained prompt wrappers. Our systems validate inputs against strict business rules before execution.',
-          icon: 'shield',
-        },
-        {
-          title: '100% Sovereign IP Ownership',
-          description: 'You own all schemas, models, and application repositories. Zero proprietary license lock-in or recurring seat taxes.',
-          icon: 'database',
-        },
-        {
-          title: 'Sub-Second Edge Latency',
-          description: 'Engineered on high-throughput microservices for voice synthesis and multi-system synchronization without delay.',
-          icon: 'cpu',
-        },
-      ],
-      processSteps: [
-        { stepNumber: '01', title: 'Architecture Audit', description: 'Map data flows, bottlenecks, and security parameters across operations.' },
-        { stepNumber: '02', title: 'Bespoke Engineering', description: 'Build deterministic pipelines, telephony bridges, and relational schemas.' },
-        { stepNumber: '03', title: 'Rigorous Verification', description: 'Test thousands of edge cases against real-world operational scenarios.' },
-        { stepNumber: '04', title: 'Production Handover', description: 'Deploy into your cloud infrastructure with full documentation and monitoring.' },
-      ],
-      faqs: [
-        { question: 'How is TechCentera different from off-the-shelf AI tools?', answer: 'Off-the-shelf tools force your workflows into rigid templates and charge per-seat fees. TechCentera builds sovereign, custom software that you own 100% with no recurring licensing fees.' },
-        { question: 'Do we own the intellectual property and code?', answer: 'Yes. 100% of all repository code, database schemas, and documentation are transferred directly to your organization upon project completion.' },
-        { question: 'What security standards do you adhere to?', answer: 'All architectures adhere to strict SOC-2 data sanitization parameters, encrypted transit (TLS 1.3), and zero-retention API policies.' },
-      ],
-      ctaBand: {
-        badge: 'Enterprise Consultation',
-        title: 'Ready to Eliminate Operational Debt with Governed AI?',
-        description: 'Schedule a confidential architecture review with our principal systems engineers.',
-        buttonLabel: 'Schedule Architecture Call',
-        buttonUrl: '/contact',
-      },
-    }),
-  });
-  console.log('✅ Homepage seeded.');
-
-  // 3. Seed Services
+  // 2. Seed Services
   const services = [
     {
       title: 'AI Receptionist',
@@ -197,7 +146,7 @@ async function seedLiveData() {
     console.log(`✅ Seeded service: ${s.title}`);
   }
 
-  // 4. Seed Testimonials
+  // 3. Seed Testimonials
   const testimonials = [
     {
       quote: 'TechCentera replaced our fragile patchwork of third-party automation tools with a custom, governed pipeline. We cut repetitive intake time by 70% while retaining total control over our customer data.',
@@ -246,7 +195,7 @@ async function seedLiveData() {
     console.log(`✅ Seeded testimonial: ${t.author}`);
   }
 
-  console.log('\n🎉 ALL DATA HAS BEEN POPULATED IN PAYLOAD CMS & POSTGRESQL DATABASE!');
+  console.log('\n🎉 ALL CONTENT & NAVIGATION MENUS SEEDED IN PAYLOAD CMS!');
 }
 
 seedLiveData().catch(console.error);

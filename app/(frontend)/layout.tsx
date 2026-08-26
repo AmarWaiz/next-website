@@ -4,6 +4,8 @@ import '../globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { ThemeProvider } from '@/components/layout/ThemeProvider';
+import { getPayload } from 'payload';
+import config from '@payload-config';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -82,11 +84,21 @@ const jsonLdOrg = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  let settings: any = null;
+  try {
+    const payload = await getPayload({ config });
+    settings = await payload.findGlobal({
+      slug: 'site-settings',
+    });
+  } catch (err) {
+    console.error('Payload SiteSettings fetch error in RootLayout:', err);
+  }
+
   return (
     <html
       lang="en"
@@ -104,11 +116,11 @@ export default function RootLayout({
           <a href="#main-content" className="skip-link">
             Skip to main content
           </a>
-          <Header />
+          <Header settings={settings} />
           <main id="main-content" className="flex-1 pt-20">
             {children}
           </main>
-          <Footer />
+          <Footer settings={settings} />
         </ThemeProvider>
       </body>
     </html>

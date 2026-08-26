@@ -1,12 +1,15 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from '@/ui/Button';
 import { Badge } from '@/ui/Badge';
 import { SectionHeading } from '@/components/sections/SectionHeading';
 import { StatsStrip } from '@/components/sections/StatsStrip';
 import { CTABand } from '@/components/sections/CTABand';
 import { ArrowRight, ShieldCheck, Code2, RefreshCw } from 'lucide-react';
+import { getPayload } from 'payload';
+import config from '@payload-config';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'About Our Engineering Approach',
@@ -14,7 +17,7 @@ export const metadata: Metadata = {
     'TechCentera builds bespoke AI automation and custom software for mid-market leaders who value code ownership, data privacy, and deterministic reliability.',
 };
 
-const principles = [
+const defaultPrinciples = [
   {
     icon: Code2,
     title: 'Code Ownership Over SaaS Rental',
@@ -32,7 +35,27 @@ const principles = [
   },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  let cmsAbout: any = null;
+  try {
+    const payload = await getPayload({ config });
+    const { docs } = await payload.find({
+      collection: 'pages',
+      where: { slug: { equals: 'about' } },
+    });
+    cmsAbout = docs[0] || null;
+  } catch (err) {
+    console.error('Payload fetch error on About page:', err);
+  }
+
+  const badge = cmsAbout?.hero?.badge || 'About TechCentera';
+  const headline = cmsAbout?.hero?.headline || 'Engineering Autonomous Systems You Actually Own.';
+  const description =
+    cmsAbout?.hero?.description ||
+    'We help operations and technology leaders eliminate manual work through bespoke AI automation pipelines and custom enterprise software without recurring licensing extortion.';
+  const primaryBtn = cmsAbout?.hero?.primaryButton || { label: 'Book a Consultation', url: '/contact' };
+  const secondaryBtn = cmsAbout?.hero?.secondaryButton || { label: 'Explore Live Systems', url: '/services' };
+
   return (
     <div className="space-y-24 md:space-y-36 pb-16">
       {/* 1. HERO */}
@@ -42,76 +65,53 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 space-y-12">
           <div className="max-w-4xl space-y-8">
             <Badge variant="accent" withDot>
-              About TechCentera
+              {badge}
             </Badge>
 
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-ink leading-[1.06]">
-              Engineering Autonomous Systems You Actually Own.
+              {headline}
             </h1>
 
             <p className="text-lg sm:text-xl text-ink-muted leading-relaxed prose-measure">
-              We help operations and technology leaders eliminate manual work through bespoke AI automation pipelines and custom enterprise software without recurring licensing extortion.
+              {description}
             </p>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
-              <Link href="/contact">
-                <Button variant="accent" size="lg" className="w-full sm:w-auto text-sm font-bold gap-2 shadow-lg shadow-accent/25" rightIcon={<ArrowRight className="h-4 w-4" />}>
-                  Book a Consultation
+              <Link href={primaryBtn.url || '/contact'}>
+                <Button variant="accent" size="lg" className="w-full sm:w-auto text-sm font-bold gap-2 shadow-lg shadow-accent/25 whitespace-nowrap" rightIcon={<ArrowRight className="h-4 w-4" />}>
+                  {primaryBtn.label || 'Book a Consultation'}
+                </Button>
+              </Link>
+              <Link href={secondaryBtn.url || '/services'}>
+                <Button variant="secondary" size="lg" className="w-full sm:w-auto text-sm font-semibold hover:border-white/30 whitespace-nowrap">
+                  {secondaryBtn.label || 'Explore Live Systems'}
                 </Button>
               </Link>
             </div>
           </div>
-
-          {/* Hero Visual Mockup */}
-          <div className="relative aspect-[21/9] w-full rounded-3xl overflow-hidden border border-border bg-surface-raised shadow-2xl shadow-accent/10">
-            <Image
-              src="/images/hero-preview.jpg"
-              alt="TechCentera Systems Architecture"
-              fill
-              priority
-              className="object-cover opacity-90"
-              sizes="(max-width: 1200px) 100vw, 1200px"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-          </div>
         </div>
       </section>
 
-      {/* 2. WHO WE ARE */}
+      {/* 2. STATS */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          <div className="lg:col-span-5 space-y-4">
-            <Badge variant="default">Our Focus</Badge>
-            <h2 className="text-3xl sm:text-4xl font-bold text-ink leading-tight">
-              Enterprise Software Built for Operational Leaders
-            </h2>
-          </div>
-          <div className="lg:col-span-7 space-y-6 text-base sm:text-lg text-ink-muted leading-relaxed">
-            <p>
-              TechCentera was founded to solve a fundamental problem in enterprise technology: companies were trapped between rigid, overpriced SaaS subscriptions and fragile, unconstrained AI experiments.
-            </p>
-            <p>
-              We engineer mission-critical systems that integrate directly with your existing infrastructure. Our clients gain scalable automated capacity, complete data privacy, and the freedom of total software ownership.
-            </p>
-          </div>
-        </div>
+        <StatsStrip />
       </section>
 
-      {/* 3. HOW WE WORK */}
+      {/* 3. CORE PRINCIPLES */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 space-y-12">
         <SectionHeading
-          badge="Engineering Philosophy"
-          title="The Core Principles Guiding Our Architecture"
-          description="We build software designed to withstand heavy enterprise volume, regulatory scrutiny, and long-term organizational growth."
+          badge="Core Philosophy"
+          title="The Principles That Drive Our Engineering"
+          description="How we approach technical challenges differently than traditional digital agencies and SaaS vendors."
         />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {principles.map(p => {
+          {defaultPrinciples.map(p => {
             const Icon = p.icon;
             return (
               <div
                 key={p.title}
-                className="rounded-3xl border border-border bg-surface-raised p-8 space-y-4 card-hover-effect hover:border-accent/40"
+                className="rounded-3xl border border-border bg-surface-raised p-8 space-y-4 card-hover-effect hover:border-white/25"
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/15 border border-accent/30 text-accent">
                   <Icon className="h-6 w-6" />
@@ -126,16 +126,8 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* 4. STATS STRIP */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-        <StatsStrip />
-      </section>
-
-      {/* 5. CTA BAND */}
-      <CTABand
-        title="Build Your Enterprise Automation Roadmap With Us"
-        description="Schedule an architectural review with our principal engineers to evaluate your workflows and systems."
-      />
+      {/* 4. CTA */}
+      <CTABand />
     </div>
   );
 }

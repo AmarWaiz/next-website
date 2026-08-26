@@ -7,48 +7,103 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/ui/Button';
 import { ChevronDown, Menu, X, ArrowUpRight, ChevronRight } from 'lucide-react';
 
-const servicesNav = [
+export interface HeaderProps {
+  settings?: {
+    branding?: {
+      brandName?: string;
+      logoIconText?: string;
+      tagline?: string;
+    };
+    navItems?: Array<{
+      label: string;
+      url: string;
+      hasDropdown?: boolean;
+      dropdownItems?: Array<{
+        title: string;
+        url: string;
+        description?: string;
+        badge?: string;
+      }>;
+    }>;
+    headerCta?: {
+      label?: string;
+      url?: string;
+    };
+    contactInfo?: {
+      phone?: string;
+      email?: string;
+      address?: string;
+    };
+  };
+}
+
+const defaultServicesNav = [
   {
     title: 'All Services Hub',
-    href: '/services',
+    url: '/services',
     description: 'Explore the full AI & custom engineering platform',
-    isHub: true,
+    badge: 'Hub',
   },
   {
     title: 'AI Receptionist',
-    href: '/services/ai-receptionist',
+    url: '/services/ai-receptionist',
     description: '24/7 autonomous intake, scheduling & routing',
   },
   {
     title: 'AI Customer Support',
-    href: '/services/ai-customer-support',
+    url: '/services/ai-customer-support',
     description: 'Tier-1 resolution with governed human escalation',
   },
   {
     title: 'AI Workflow Automation',
-    href: '/services/ai-workflow-automation',
+    url: '/services/ai-workflow-automation',
     description: 'ERP/CRM bi-directional sync & event pipelines',
   },
   {
     title: 'Custom CRM & ERP',
-    href: '/services/custom-crm-erp',
+    url: '/services/custom-crm-erp',
     description: 'Bespoke systems built to your exact data model',
   },
 ];
 
-export function Header() {
+const defaultNavItems = [
+  { label: 'Home', url: '/' },
+  {
+    label: 'Services',
+    url: '/services',
+    hasDropdown: true,
+    dropdownItems: defaultServicesNav,
+  },
+  { label: 'About', url: '/about' },
+  { label: 'Blog', url: '/blog' },
+  { label: 'Contact', url: '/contact' },
+];
+
+export function Header({ settings }: HeaderProps) {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = React.useState(false);
-  const [servicesOpen, setServicesOpen] = React.useState(false);
+  const [activeDropdown, setActiveDropdown] = React.useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-  const [mobileServicesExpanded, setMobileServicesExpanded] = React.useState(true);
-  const dropdownContainerRef = React.useRef<HTMLDivElement>(null);
+  const [expandedMobileDropdowns, setExpandedMobileDropdowns] = React.useState<Record<string, boolean>>({
+    Services: true,
+  });
+  const navContainerRef = React.useRef<HTMLDivElement>(null);
+
+  // Fallbacks from CMS
+  const brandName = settings?.branding?.brandName || 'TechCentera';
+  const logoIcon = settings?.branding?.logoIconText || 'TC';
+  const navItems = (settings?.navItems && settings.navItems.length > 0) ? settings.navItems : defaultNavItems;
+  const ctaLabel = settings?.headerCta?.label || 'Book a Consultation';
+  const ctaUrl = settings?.headerCta?.url || '/contact';
+  const phone = settings?.contactInfo?.phone || '+1 (786) 827-3650';
+  const email = settings?.contactInfo?.email || 'contact@techcentera.com';
+  const address = settings?.contactInfo?.address || '625 Orange St, Wilmington DE 19801';
 
   // Close menus on path change
   const [prevPath, setPrevPath] = React.useState(pathname);
   if (prevPath !== pathname) {
     setPrevPath(pathname);
-    setServicesOpen(false);
+    setActiveDropdown(null);
     setMobileMenuOpen(false);
   }
 
@@ -64,10 +119,10 @@ export function Header() {
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        dropdownContainerRef.current &&
-        !dropdownContainerRef.current.contains(event.target as Node)
+        navContainerRef.current &&
+        !navContainerRef.current.contains(event.target as Node)
       ) {
-        setServicesOpen(false);
+        setActiveDropdown(null);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -86,6 +141,13 @@ export function Header() {
     };
   }, [mobileMenuOpen]);
 
+  const toggleMobileDropdown = (label: string) => {
+    setExpandedMobileDropdowns(prev => ({
+      ...prev,
+      [label]: !prev[label],
+    }));
+  };
+
   return (
     <>
       <header
@@ -103,160 +165,146 @@ export function Header() {
             className="flex items-center gap-2.5 text-lg sm:text-xl font-bold tracking-tight text-ink group focus:outline-none shrink-0"
           >
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent text-white font-black text-sm shadow-md shadow-accent/20 group-hover:scale-105 transition-transform">
-              TC
+              {logoIcon}
             </span>
             <span className="flex items-center gap-1">
-              TechCentera
+              {brandName}
               <span className="h-1.5 w-1.5 rounded-full bg-accent inline-block ml-0.5 animate-pulse" />
             </span>
           </Link>
 
-          {/* Desktop Navigation (visible on lg and above: ≥ 1024px) */}
-          <nav className="hidden lg:flex items-center gap-1.5 xl:gap-2" aria-label="Main Navigation">
-            <Link
-              href="/"
-              className={cn(
-                'px-3.5 py-2 text-sm font-medium rounded-xl transition-all duration-200',
-                pathname === '/'
-                  ? 'text-white bg-white/[0.08]'
-                  : 'text-ink-muted hover:text-white hover:bg-white/[0.05]'
-              )}
-            >
-              Home
-            </Link>
+          {/* Desktop Navigation */}
+          <nav
+            ref={navContainerRef}
+            className="hidden lg:flex items-center gap-1.5 xl:gap-2"
+            aria-label="Main Navigation"
+          >
+            {navItems.map((item) => {
+              const hasSub = Boolean(item.hasDropdown && item.dropdownItems && item.dropdownItems.length > 0);
+              const isActive = item.url === '/' ? pathname === '/' : pathname.startsWith(item.url);
+              const isDropdownOpen = activeDropdown === item.label;
 
-            {/* Services Dropdown (Wrapped with Hover Bridge + Click Toggle) */}
-            <div
-              ref={dropdownContainerRef}
-              className="relative group/nav"
-              onMouseEnter={() => setServicesOpen(true)}
-              onMouseLeave={() => setServicesOpen(false)}
-            >
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setServicesOpen((prev) => !prev);
-                }}
-                aria-expanded={servicesOpen}
-                aria-haspopup="true"
-                className={cn(
-                  'flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer',
-                  pathname.startsWith('/services') || servicesOpen
-                    ? 'text-white bg-white/[0.08]'
-                    : 'text-ink-muted hover:text-white hover:bg-white/[0.05]'
-                )}
-              >
-                <span>Services</span>
-                <ChevronDown
-                  className={cn(
-                    'h-4 w-4 transition-transform duration-200 text-ink-muted',
-                    servicesOpen && 'rotate-180 text-accent'
-                  )}
-                />
-              </button>
+              if (!hasSub) {
+                return (
+                  <Link
+                    key={item.url + item.label}
+                    href={item.url}
+                    className={cn(
+                      'px-3.5 py-2 text-sm font-medium rounded-xl transition-all duration-200',
+                      isActive
+                        ? 'text-white bg-white/[0.08]'
+                        : 'text-ink-muted hover:text-white hover:bg-white/[0.05]'
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              }
 
-              {/* Seamless dropdown with invisible top padding bridge */}
-              <div
-                className={cn(
-                  'absolute top-full left-0 pt-2 w-92 z-50 transition-all duration-200',
-                  servicesOpen
-                    ? 'opacity-100 visible translate-y-0 pointer-events-auto'
-                    : 'opacity-0 invisible -translate-y-2 pointer-events-none group-hover/nav:opacity-100 group-hover/nav:visible group-hover/nav:translate-y-0 group-hover/nav:pointer-events-auto'
-                )}
-              >
-                <div className="rounded-2xl border border-border bg-surface-raised/98 backdrop-blur-2xl p-2.5 shadow-2xl shadow-black/80 space-y-1">
-                  {servicesNav.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setServicesOpen(false)}
+              return (
+                <div
+                  key={item.label}
+                  className="relative group/nav"
+                  onMouseEnter={() => setActiveDropdown(item.label)}
+                  onMouseLeave={() => setActiveDropdown(null)}
+                >
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveDropdown(prev => (prev === item.label ? null : item.label));
+                    }}
+                    aria-expanded={isDropdownOpen}
+                    aria-haspopup="true"
+                    className={cn(
+                      'flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer',
+                      isActive || isDropdownOpen
+                        ? 'text-white bg-white/[0.08]'
+                        : 'text-ink-muted hover:text-white hover:bg-white/[0.05]'
+                    )}
+                  >
+                    <span>{item.label}</span>
+                    <ChevronDown
                       className={cn(
-                        'block rounded-xl p-3 transition-all duration-150 group',
-                        item.isHub
-                          ? 'bg-accent/10 border border-accent/25 mb-1.5 hover:bg-accent/20'
-                          : 'hover:bg-surface-card hover:border-border/60 border border-transparent',
-                        pathname === item.href && 'bg-surface-card border-accent/40'
+                        'h-4 w-4 transition-transform duration-200 text-ink-muted',
+                        isDropdownOpen && 'rotate-180 text-accent'
                       )}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span
-                          className={cn(
-                            'text-sm font-semibold transition-colors',
-                            item.isHub ? 'text-accent' : 'text-ink group-hover:text-accent',
-                            pathname === item.href && 'text-accent'
-                          )}
-                        >
-                          {item.title}
-                        </span>
-                        {item.isHub ? (
-                          <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-accent text-white font-mono">
-                            Hub
-                          </span>
-                        ) : (
-                          <ArrowUpRight className="h-3.5 w-3.5 text-ink-subtle opacity-0 group-hover:opacity-100 group-hover:text-accent transition-all" />
-                        )}
-                      </div>
-                      <p className="mt-0.5 text-xs text-ink-muted leading-relaxed line-clamp-1">
-                        {item.description}
-                      </p>
-                    </Link>
-                  ))}
+                    />
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  <div
+                    className={cn(
+                      'absolute top-full left-0 pt-2 w-92 z-50 transition-all duration-200',
+                      isDropdownOpen
+                        ? 'opacity-100 visible translate-y-0 pointer-events-auto'
+                        : 'opacity-0 invisible -translate-y-2 pointer-events-none group-hover/nav:opacity-100 group-hover/nav:visible group-hover/nav:translate-y-0 group-hover/nav:pointer-events-auto'
+                    )}
+                  >
+                    <div className="rounded-2xl border border-border bg-surface-raised/98 backdrop-blur-2xl p-2.5 shadow-2xl shadow-black/80 space-y-1">
+                      {item.dropdownItems?.map((sub) => {
+                        const isSubActive = pathname === sub.url;
+                        const isHub = sub.badge === 'Hub' || sub.url === '/services';
+                        return (
+                          <Link
+                            key={sub.url + sub.title}
+                            href={sub.url}
+                            onClick={() => setActiveDropdown(null)}
+                            className={cn(
+                              'block rounded-xl p-3 transition-all duration-150 group',
+                              isHub
+                                ? 'bg-accent/10 border border-accent/25 mb-1.5 hover:bg-accent/20'
+                                : 'hover:bg-surface-card hover:border-border/60 border border-transparent',
+                              isSubActive && 'bg-surface-card border-accent/40'
+                            )}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span
+                                className={cn(
+                                  'text-sm font-semibold transition-colors',
+                                  isHub ? 'text-accent' : 'text-ink group-hover:text-accent',
+                                  isSubActive && 'text-accent'
+                                )}
+                              >
+                                {sub.title}
+                              </span>
+                              {sub.badge ? (
+                                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-accent text-white font-mono">
+                                  {sub.badge}
+                                </span>
+                              ) : (
+                                <ArrowUpRight className="h-3.5 w-3.5 text-ink-subtle opacity-0 group-hover:opacity-100 group-hover:text-accent transition-all" />
+                              )}
+                            </div>
+                            {sub.description && (
+                              <p className="mt-0.5 text-xs text-ink-muted leading-relaxed line-clamp-1">
+                                {sub.description}
+                              </p>
+                            )}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-
-            <Link
-              href="/about"
-              className={cn(
-                'px-3.5 py-2 text-sm font-medium rounded-xl transition-all duration-200',
-                pathname === '/about'
-                  ? 'text-white bg-white/[0.08]'
-                  : 'text-ink-muted hover:text-white hover:bg-white/[0.05]'
-              )}
-            >
-              About
-            </Link>
-
-            <Link
-              href="/blog"
-              className={cn(
-                'px-3.5 py-2 text-sm font-medium rounded-xl transition-all duration-200',
-                pathname.startsWith('/blog')
-                  ? 'text-white bg-white/[0.08]'
-                  : 'text-ink-muted hover:text-white hover:bg-white/[0.05]'
-              )}
-            >
-              Blog
-            </Link>
-
-            <Link
-              href="/contact"
-              className={cn(
-                'px-3.5 py-2 text-sm font-medium rounded-xl transition-all duration-200',
-                pathname === '/contact'
-                  ? 'text-white bg-white/[0.08]'
-                  : 'text-ink-muted hover:text-white hover:bg-white/[0.05]'
-              )}
-            >
-              Contact
-            </Link>
+              );
+            })}
           </nav>
 
-          {/* Desktop CTA */}
+          {/* Desktop CTA Button */}
           <div className="hidden lg:flex items-center gap-3 shrink-0">
-            <Link href="/contact">
+            <Link href={ctaUrl}>
               <Button variant="accent" size="sm" className="rounded-xl font-semibold shadow-md whitespace-nowrap">
-                Book a Consultation
+                {ctaLabel}
               </Button>
             </Link>
           </div>
 
-          {/* Tablet/Mobile Hamburger Toggle (visible on < lg: 1024px) */}
+          {/* Tablet/Mobile Hamburger Toggle */}
           <div className="flex lg:hidden items-center gap-2.5">
-            <Link href="/contact" className="hidden sm:inline-block">
+            <Link href={ctaUrl} className="hidden sm:inline-block">
               <Button variant="accent" size="sm" className="text-xs py-1.5 px-3 rounded-lg whitespace-nowrap">
-                Book Consultation
+                {ctaLabel}
               </Button>
             </Link>
 
@@ -277,7 +325,7 @@ export function Header() {
         </div>
       </header>
 
-      {/* Fullscreen Independent Mobile Overlay (Immune to parent backdrop-filter trapping) */}
+      {/* Fullscreen Mobile Overlay */}
       {mobileMenuOpen && (
         <div
           id="mobile-menu-overlay"
@@ -291,9 +339,9 @@ export function Header() {
               className="flex items-center gap-2.5 text-lg font-bold text-ink"
             >
               <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent text-white font-black text-sm shadow-md shadow-accent/20">
-                TC
+                {logoIcon}
               </span>
-              <span>TechCentera</span>
+              <span>{brandName}</span>
             </Link>
 
             <button
@@ -308,118 +356,88 @@ export function Header() {
 
           {/* Navigation Links inside Drawer */}
           <div className="py-6 space-y-3">
-            <Link
-              href="/"
-              onClick={() => setMobileMenuOpen(false)}
-              className={cn(
-                'flex items-center justify-between px-4 py-3.5 text-base font-bold rounded-xl transition-colors',
-                pathname === '/'
-                  ? 'bg-accent/15 text-accent border border-accent/30'
-                  : 'text-ink hover:bg-surface-raised'
-              )}
-            >
-              <span>Home</span>
-              <ChevronRight className="h-4 w-4 text-ink-subtle" />
-            </Link>
+            {navItems.map((item) => {
+              const hasSub = Boolean(item.hasDropdown && item.dropdownItems && item.dropdownItems.length > 0);
+              const isActive = item.url === '/' ? pathname === '/' : pathname.startsWith(item.url);
+              const isExpanded = Boolean(expandedMobileDropdowns[item.label]);
 
-            {/* Mobile Services Accordion */}
-            <div className="rounded-xl border border-border/60 bg-surface-raised/60 overflow-hidden">
-              <button
-                type="button"
-                onClick={() => setMobileServicesExpanded(!mobileServicesExpanded)}
-                className="flex w-full items-center justify-between px-4 py-3.5 text-base font-bold text-ink cursor-pointer hover:text-accent transition-colors select-none"
-              >
-                <span className="flex items-center gap-2">
-                  <span>Services</span>
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-accent text-white font-mono">
-                    4 Systems
-                  </span>
-                </span>
-                <ChevronDown
-                  className={cn(
-                    'h-4 w-4 transition-transform duration-200 text-ink-muted',
-                    mobileServicesExpanded && 'rotate-180 text-accent'
-                  )}
-                />
-              </button>
+              if (!hasSub) {
+                return (
+                  <Link
+                    key={item.url + item.label}
+                    href={item.url}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={cn(
+                      'flex items-center justify-between px-4 py-3.5 text-base font-bold rounded-xl transition-colors',
+                      isActive
+                        ? 'bg-accent/15 text-accent border border-accent/30'
+                        : 'text-ink hover:bg-surface-raised'
+                    )}
+                  >
+                    <span>{item.label}</span>
+                    <ChevronRight className="h-4 w-4 text-ink-subtle" />
+                  </Link>
+                );
+              }
 
-              {mobileServicesExpanded && (
-                <div className="px-3 pb-3 space-y-1.5 border-t border-border/40 pt-2 bg-surface-card/40">
-                  {servicesNav.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setMobileMenuOpen(false)}
+              return (
+                <div key={item.label} className="rounded-xl border border-border/60 bg-surface-raised/60 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => toggleMobileDropdown(item.label)}
+                    className="flex w-full items-center justify-between px-4 py-3.5 text-base font-bold text-ink cursor-pointer hover:text-accent transition-colors select-none"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span>{item.label}</span>
+                      <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-accent text-white font-mono">
+                        {item.dropdownItems?.length} Links
+                      </span>
+                    </span>
+                    <ChevronDown
                       className={cn(
-                        'block px-3 py-2.5 text-sm rounded-lg transition-colors',
-                        item.isHub
-                          ? 'bg-accent/15 text-accent font-bold'
-                          : pathname === item.href
-                          ? 'bg-surface-raised text-accent font-semibold'
-                          : 'text-ink-muted hover:text-ink hover:bg-surface-raised'
+                        'h-4 w-4 transition-transform duration-200 text-ink-muted',
+                        isExpanded && 'rotate-180 text-accent'
                       )}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span>{item.title}</span>
-                        {item.isHub && (
-                          <span className="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded bg-accent text-white">
-                            Hub
-                          </span>
-                        )}
-                      </div>
-                    </Link>
-                  ))}
+                    />
+                  </button>
+
+                  {isExpanded && (
+                    <div className="px-3 pb-3 space-y-1.5 border-t border-border/40 pt-2 bg-surface-card/40">
+                      {item.dropdownItems?.map((sub) => (
+                        <Link
+                          key={sub.url + sub.title}
+                          href={sub.url}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={cn(
+                            'block px-3 py-2.5 text-sm rounded-lg transition-colors',
+                            sub.badge === 'Hub'
+                              ? 'bg-accent/15 text-accent font-bold'
+                              : pathname === sub.url
+                              ? 'bg-surface-raised text-accent font-semibold'
+                              : 'text-ink-muted hover:text-ink hover:bg-surface-raised'
+                          )}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span>{sub.title}</span>
+                            {sub.badge && (
+                              <span className="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded bg-accent text-white">
+                                {sub.badge}
+                              </span>
+                            )}
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-
-            <Link
-              href="/about"
-              onClick={() => setMobileMenuOpen(false)}
-              className={cn(
-                'flex items-center justify-between px-4 py-3.5 text-base font-bold rounded-xl transition-colors',
-                pathname === '/about'
-                  ? 'bg-accent/15 text-accent border border-accent/30'
-                  : 'text-ink hover:bg-surface-raised'
-              )}
-            >
-              <span>About Us</span>
-              <ChevronRight className="h-4 w-4 text-ink-subtle" />
-            </Link>
-
-            <Link
-              href="/blog"
-              onClick={() => setMobileMenuOpen(false)}
-              className={cn(
-                'flex items-center justify-between px-4 py-3.5 text-base font-bold rounded-xl transition-colors',
-                pathname.startsWith('/blog')
-                  ? 'bg-accent/15 text-accent border border-accent/30'
-                  : 'text-ink hover:bg-surface-raised'
-              )}
-            >
-              <span>Insights & Blog</span>
-              <ChevronRight className="h-4 w-4 text-ink-subtle" />
-            </Link>
-
-            <Link
-              href="/contact"
-              onClick={() => setMobileMenuOpen(false)}
-              className={cn(
-                'flex items-center justify-between px-4 py-3.5 text-base font-bold rounded-xl transition-colors',
-                pathname === '/contact'
-                  ? 'bg-accent/15 text-accent border border-accent/30'
-                  : 'text-ink hover:bg-surface-raised'
-              )}
-            >
-              <span>Contact & Inquiries</span>
-              <ChevronRight className="h-4 w-4 text-ink-subtle" />
-            </Link>
+              );
+            })}
           </div>
 
           {/* Bottom Actions inside Drawer */}
           <div className="pt-6 border-t border-border mt-auto space-y-4">
             <Link
-              href="/contact"
+              href={ctaUrl}
               onClick={() => setMobileMenuOpen(false)}
               className="block w-full"
             >
@@ -428,15 +446,15 @@ export function Header() {
                 size="lg"
                 className="w-full justify-center text-sm font-bold shadow-lg shadow-accent/20 whitespace-nowrap"
               >
-                Book a Consultation
+                {ctaLabel}
               </Button>
             </Link>
             <div className="text-center space-y-1">
               <p className="text-xs font-mono text-ink-muted">
-                +1 (786) 827-3650 · contact@techcentera.com
+                {phone} · {email}
               </p>
               <p className="text-[10px] text-ink-subtle">
-                625 Orange St, Wilmington DE 19801
+                {address}
               </p>
             </div>
           </div>

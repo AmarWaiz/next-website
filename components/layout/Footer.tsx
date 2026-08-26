@@ -1,8 +1,36 @@
 import * as React from 'react';
 import Link from 'next/link';
 
-export function Footer() {
+export interface FooterProps {
+  settings?: {
+    branding?: {
+      brandName?: string;
+      logoIconText?: string;
+    };
+    contactInfo?: {
+      phone?: string;
+      email?: string;
+      address?: string;
+    };
+    footer?: {
+      description?: string;
+      copyright?: string;
+    };
+  };
+}
+
+export function Footer({ settings }: FooterProps) {
   const currentYear = new Date().getFullYear();
+
+  const brandName = settings?.branding?.brandName || 'TechCentera';
+  const logoIcon = settings?.branding?.logoIconText || 'TC';
+  const footerDesc =
+    settings?.footer?.description ||
+    'Governed AI automation and custom software engineering for mid-market and enterprise operations. Zero vendor lock-in. Full IP ownership.';
+  const phone = settings?.contactInfo?.phone || '+1 (786) 827-3650';
+  const email = settings?.contactInfo?.email || 'contact@techcentera.com';
+  const address = settings?.contactInfo?.address || '625 Orange Street, Suite 231B, Wilmington DE 19801';
+  const copyright = settings?.footer?.copyright || `© ${currentYear} ${brandName} Inc. All rights reserved.`;
 
   return (
     <footer className="border-t border-border bg-surface-raised py-16 md:py-24 text-ink-muted">
@@ -12,24 +40,23 @@ export function Footer() {
           <div className="md:col-span-5 space-y-6">
             <Link href="/" className="flex items-center gap-2.5 text-xl font-bold tracking-tight text-ink">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-white font-black text-sm shadow-md shadow-accent/20">
-                TC
+                {logoIcon}
               </span>
-              <span>TechCentera</span>
+              <span>{brandName}</span>
             </Link>
             <p className="text-sm leading-relaxed text-ink-muted max-w-sm">
-              Governed AI automation and custom software engineering for mid-market and enterprise operations. Zero vendor lock-in. Full IP ownership.
+              {footerDesc}
             </p>
             <div className="space-y-2 text-xs text-ink-muted pt-2">
-              <p className="font-mono text-ink">625 Orange Street, Suite 231B</p>
-              <p className="font-mono">Wilmington, DE 19801</p>
+              <p className="font-mono text-ink">{address}</p>
               <p className="pt-2">
-                <a href="tel:+17868273650" className="hover:text-accent transition-colors font-mono">
-                  +1 (786) 827-3650
+                <a href={`tel:${phone.replace(/[^0-9+]/g, '')}`} className="hover:text-accent transition-colors font-mono">
+                  {phone}
                 </a>
               </p>
               <p>
-                <a href="mailto:contact@techcentera.com" className="hover:text-accent transition-colors font-mono">
-                  contact@techcentera.com
+                <a href={`mailto:${email}`} className="hover:text-accent transition-colors font-mono">
+                  {email}
                 </a>
               </p>
             </div>
@@ -69,7 +96,7 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Company Column */}
+          {/* Company & Trust Column */}
           <div className="md:col-span-4 space-y-4">
             <p className="text-xs font-bold uppercase tracking-wider text-ink font-mono">
               Company & Resources
@@ -105,18 +132,19 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-16 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-ink-subtle">
-          <p>© {currentYear} TechCentera Inc. All rights reserved.</p>
+        <div className="mt-16 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono">
+          <p>{copyright}</p>
           <div className="flex items-center gap-6">
-            <Link href="/privacy" className="hover:text-ink transition-colors">
+            <Link href="/privacy" className="hover:text-white transition-colors">
               Privacy
             </Link>
-            <Link href="/terms" className="hover:text-ink transition-colors">
+            <Link href="/terms" className="hover:text-white transition-colors">
               Terms
             </Link>
-            <Link href="/contact" className="hover:text-ink transition-colors">
-              Security
-            </Link>
+            <span className="text-accent flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+              SOC-2 Type II Certified Practice
+            </span>
           </div>
         </div>
       </div>
