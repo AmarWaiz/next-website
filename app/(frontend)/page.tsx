@@ -9,71 +9,75 @@ import { Accordion } from '@/ui/Accordion';
 import { CTABand } from '@/components/sections/CTABand';
 import { getAllServices } from '@/lib/mdx';
 import { ArrowRight, ShieldCheck, Database, Cpu, CheckCircle2 } from 'lucide-react';
+import { getPayload } from 'payload';
+import config from '@payload-config';
 
-const homeFaqs = [
+export const dynamic = 'force-dynamic';
+
+const defaultFaqs = [
   {
-    question: 'How does TechCentera prevent AI hallucinations in production workflows?',
+    question: 'How is TechCentera different from off-the-shelf AI wrappers and SaaS tools?',
     answer:
-      'We enforce deterministic boundary checks, structured schema outputs, and multi-stage verification pipelines. Queries exceeding risk thresholds route directly to human operators.',
+      'Off-the-shelf tools force your workflows into rigid templates, store your data in shared multi-tenant clouds, and charge per-seat monthly subscription taxes. TechCentera engineers sovereign, bespoke software and agentic workflows that you own 100% with no recurring licensing fees and deterministic data security.',
   },
   {
-    question: 'Who owns the intellectual property and codebase of custom systems?',
+    question: 'Do we own the intellectual property and source code?',
     answer:
-      'You retain 100% ownership of all custom software, database schemas, and orchestration logic with zero recurring seat licensing or vendor lock-in.',
+      'Yes. Unlike SaaS platforms where you rent features, TechCentera delivers 100% intellectual property ownership upon project completion. You receive all application repositories, relational schemas, pipeline configurations, and infrastructure-as-code scripts.',
   },
   {
-    question: 'Can your automation pipelines connect to legacy on-premise ERPs?',
+    question: 'How do you prevent hallucinations in AI receptionists and support systems?',
     answer:
-      'Yes. We engineer resilient middleware connectors that interface safely with legacy SQL, AS400, SOAP endpoints, and custom databases.',
+      'We implement deterministic guardrails, structured JSON schema validation, and confidence-gated Retrieval-Augmented Generation (RAG). Every prompt execution is constrained by strict domain rules, and low-confidence requests gracefully escalate to human operators.',
   },
   {
-    question: 'What is the typical timeline for an enterprise AI deployment?',
+    question: 'Can your solutions integrate with our legacy on-premise or cloud ERP systems?',
     answer:
-      'Standard automated workflows and voice systems deploy within 3 to 4 weeks, including knowledge ingestion, compliance calibration, and operator onboarding.',
+      'Yes. Our engineers specialize in bi-directional API bridges, custom event queues (Kafka, RabbitMQ, SQS), and direct database synchronization for legacy systems including SAP, NetSuite, Salesforce, Microsoft Dynamics, and custom SQL databases.',
   },
   {
-    question: 'How do you handle data privacy and compliance standards?',
+    question: 'What is your typical project implementation timeline and handover process?',
     answer:
-      'All solutions deploy directly into your private cloud (AWS, GCP, Azure) with strict role-based access controls, automated PII redaction, and full audit logs.',
+      'A typical bespoke deployment follows our 4-stage engineering methodology and takes between 4 to 8 weeks from schema audit to live cloud handover. Every deployment includes complete documentation, observability dashboards, and operator onboarding.',
   },
 ];
 
-const differentiators = [
+const defaultDifferentiators = [
   {
     icon: ShieldCheck,
-    title: 'Governed AI Guardrails',
+    title: 'Deterministic Guardrails',
     description:
-      'Deterministic verification rules guarantee error-free transactions and zero unconstrained model outputs.',
-  },
-  {
-    icon: Cpu,
-    title: '100% Code & IP Ownership',
-    description:
-      'No recurring per-seat software licensing fees or closed-ecosystem lock-in. You own every line of code.',
+      'We reject unconstrained prompt wrappers. Our systems validate inputs against strict business rules, schema constraints, and compliance checks before execution.',
   },
   {
     icon: Database,
-    title: 'Legacy System Interoperability',
+    title: '100% Sovereign IP Ownership',
     description:
-      'Connect modern artificial intelligence agents to existing SQL, ERP, and CRM databases without rip-and-replace.',
+      'You own all schemas, models, and application repositories. Zero proprietary license lock-in or recurring seat taxes.',
+  },
+  {
+    icon: Cpu,
+    title: 'Sub-Second Edge Latency',
+    description:
+      'Engineered on high-throughput microservices for voice synthesis and multi-system synchronization without operational delay.',
   },
 ];
 
-const processSteps = [
+const defaultProcessSteps = [
   {
     step: '01',
-    title: 'System & Workflow Audit',
-    description: 'Map operational bottlenecks, existing data models, and high-impact automation targets.',
+    title: 'Architecture & Workflow Audit',
+    description: 'Map data flows, operational bottlenecks, telephony trunks, and data security parameters across your core business.',
   },
   {
     step: '02',
-    title: 'Bespoke Architecture Engineering',
-    description: 'Build validated schemas, deterministic agent pipelines, and high-velocity operator interfaces.',
+    title: 'Bespoke Pipeline Engineering',
+    description: 'Build deterministic pipelines, telephony bridges, and relational schemas tailored to your exact data model.',
   },
   {
     step: '03',
-    title: 'Shadow Testing & Calibration',
-    description: 'Run parallel validation against historical workflows to verify precision and safety bounds.',
+    title: 'Rigorous Verification & Testing',
+    description: 'Test thousands of real-world edge cases with automated evaluation benchmarks to ensure 99.4%+ accuracy.',
   },
   {
     step: '04',
@@ -82,8 +86,92 @@ const processSteps = [
   },
 ];
 
-export default function HomePage() {
-  const services = getAllServices();
+export default async function HomePage() {
+  let cmsHome: any = null;
+  let cmsServices: any[] = [];
+  let cmsTestimonials: any[] = [];
+
+  try {
+    const payload = await getPayload({ config });
+    const { docs: pages } = await payload.find({
+      collection: 'pages',
+      where: { slug: { equals: 'home' } },
+    });
+    cmsHome = pages[0] || null;
+
+    const { docs: sDocs } = await payload.find({
+      collection: 'services',
+      sort: 'order',
+    });
+    cmsServices = sDocs || [];
+
+    const { docs: tDocs } = await payload.find({
+      collection: 'testimonials',
+    });
+    cmsTestimonials = tDocs || [];
+  } catch (err) {
+    console.error('Payload CMS data fetch error:', err);
+  }
+
+  const reviewsList = cmsTestimonials.length > 0
+    ? cmsTestimonials.map(t => ({
+        id: String(t.id),
+        quote: t.quote,
+        author: t.author,
+        role: t.role,
+        company: t.company,
+        initials: t.initials,
+        verifiedTag: t.verifiedTag,
+      }))
+    : undefined;
+
+  // Fallback to MDX services if CMS collection empty
+  const fallbackServices = getAllServices();
+  const servicesList = cmsServices.length > 0
+    ? cmsServices.map(s => ({
+        title: s.title,
+        slug: s.slug,
+        order: s.order,
+        shortDescription: s.shortDescription,
+        features: (s.includedFeatures || []).map((f: any) => typeof f === 'string' ? f : f.item || f.feature),
+      }))
+    : fallbackServices.map(s => ({
+        title: s.frontmatter.title,
+        slug: s.frontmatter.slug,
+        order: s.frontmatter.order,
+        shortDescription: s.frontmatter.shortDescription,
+        features: s.frontmatter.includedFeatures,
+      }));
+
+  // Extract CMS fields with fallbacks
+  const heroBadge = cmsHome?.hero?.badge || 'ENTERPRISE GOVERNED AI & CUSTOM SOFTWARE';
+  const heroHeadline = cmsHome?.hero?.headline || 'Governed AI Automation & Custom Enterprise Software.';
+  const heroDescription = cmsHome?.hero?.description || 'We engineer bespoke conversational AI receptionists, autonomous workflow pipelines, and custom ERP systems for mid-market operations. Zero vendor lock-in. Full IP ownership.';
+  const heroPrimaryBtn = cmsHome?.hero?.primaryButton || { label: 'Book a Consultation', url: '/contact' };
+  const heroSecondaryBtn = cmsHome?.hero?.secondaryButton || { label: 'Explore Live Systems', url: '/services' };
+  const heroTrustPoints = cmsHome?.hero?.trustPoints && cmsHome.hero.trustPoints.length > 0
+    ? cmsHome.hero.trustPoints.map((tp: any) => typeof tp === 'string' ? tp : tp.text)
+    : ['Zero Vendor Lock-In', '100% Code Ownership', 'Sub-500ms Execution'];
+
+  const differentiatorsList = cmsHome?.differentiators && cmsHome.differentiators.length > 0
+    ? cmsHome.differentiators.map((d: any, idx: number) => ({
+        title: d.title,
+        description: d.description,
+        icon: d.icon === 'database' ? Database : d.icon === 'cpu' ? Cpu : ShieldCheck,
+      }))
+    : defaultDifferentiators;
+
+  const processList = cmsHome?.processSteps && cmsHome.processSteps.length > 0
+    ? cmsHome.processSteps.map((p: any) => ({
+        step: p.stepNumber || p.step,
+        title: p.title,
+        description: p.description,
+      }))
+    : defaultProcessSteps;
+
+  const faqsList = cmsHome?.faqs && cmsHome.faqs.length > 0
+    ? cmsHome.faqs.map((f: any) => ({ question: f.question, answer: f.answer }))
+    : defaultFaqs;
 
   return (
     <div className="space-y-24 md:space-y-32 pb-16">
@@ -97,41 +185,37 @@ export default function HomePage() {
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-accent/40 bg-accent/15 text-accent text-xs font-mono font-bold tracking-tight shadow-lg shadow-accent/10 backdrop-blur-md">
               <span className="h-2 w-2 rounded-full bg-accent animate-ping" />
-              <span>ENTERPRISE GOVERNED AI & CUSTOM SOFTWARE</span>
+              <span>{heroBadge}</span>
             </div>
 
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-ink leading-[1.06]">
-              Governed AI Automation & Custom Enterprise Software.
+              {heroHeadline}
             </h1>
 
             <p className="text-base sm:text-xl text-ink-muted leading-relaxed max-w-3xl mx-auto">
-              We engineer bespoke conversational AI receptionists, autonomous workflow pipelines, and custom ERP systems for mid-market operations. Zero vendor lock-in. Full IP ownership.
+              {heroDescription}
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-              <Link href="/contact" className="w-full sm:w-auto">
-                <Button variant="accent" size="lg" className="w-full sm:w-auto text-sm font-bold gap-2 shadow-xl shadow-accent/25" rightIcon={<ArrowRight className="h-4 w-4" />}>
-                  Book a Consultation
+              <Link href={heroPrimaryBtn.url || '/contact'} className="w-full sm:w-auto">
+                <Button variant="accent" size="lg" className="w-full sm:w-auto text-sm font-bold gap-2 shadow-xl shadow-accent/25 whitespace-nowrap" rightIcon={<ArrowRight className="h-4 w-4" />}>
+                  {heroPrimaryBtn.label || 'Book a Consultation'}
                 </Button>
               </Link>
-              <Link href="/services" className="w-full sm:w-auto">
-                <Button variant="secondary" size="lg" className="w-full sm:w-auto text-sm font-semibold hover:border-white/30">
-                  Explore Live Systems
+              <Link href={heroSecondaryBtn.url || '/services'} className="w-full sm:w-auto">
+                <Button variant="secondary" size="lg" className="w-full sm:w-auto text-sm font-semibold hover:border-white/30 whitespace-nowrap">
+                  {heroSecondaryBtn.label || 'Explore Live Systems'}
                 </Button>
               </Link>
             </div>
 
             {/* Credential highlights strip */}
             <div className="pt-6 flex flex-wrap items-center justify-center gap-6 text-xs font-mono text-ink-muted border-t border-border/50 max-w-2xl mx-auto">
-              <span className="flex items-center gap-1.5 text-ink">
-                <CheckCircle2 className="h-3.5 w-3.5 text-accent" /> Zero Vendor Lock-In
-              </span>
-              <span className="flex items-center gap-1.5 text-ink">
-                <CheckCircle2 className="h-3.5 w-3.5 text-accent" /> 100% Code Ownership
-              </span>
-              <span className="flex items-center gap-1.5 text-ink">
-                <CheckCircle2 className="h-3.5 w-3.5 text-accent" /> Sub-500ms Execution
-              </span>
+              {heroTrustPoints.map((text: string, idx: number) => (
+                <span key={idx} className="flex items-center gap-1.5 text-ink">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-accent" /> {text}
+                </span>
+              ))}
             </div>
           </div>
         </div>
@@ -151,22 +235,22 @@ export default function HomePage() {
             description="Replace disjointed SaaS subscriptions with integrated agentic infrastructure tailored to your exact operational workflows."
           />
           <Link href="/services" className="shrink-0">
-            <Button variant="outline" size="md" className="gap-2 font-semibold">
+            <Button variant="outline" size="md" className="gap-2 font-semibold whitespace-nowrap">
               <span>View All Services</span>
-
+              <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {services.map(s => (
+          {servicesList.map(s => (
             <ServiceCard
-              key={s.frontmatter.slug}
-              title={s.frontmatter.title}
-              slug={s.frontmatter.slug}
-              order={s.frontmatter.order}
-              shortDescription={s.frontmatter.shortDescription}
-              features={s.frontmatter.includedFeatures}
+              key={s.slug}
+              title={s.title}
+              slug={s.slug}
+              order={s.order}
+              shortDescription={s.shortDescription}
+              features={s.features}
             />
           ))}
         </div>
@@ -181,7 +265,7 @@ export default function HomePage() {
         />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {differentiators.map(item => {
+          {differentiatorsList.map((item: any) => {
             const Icon = item.icon;
             return (
               <div
@@ -210,7 +294,7 @@ export default function HomePage() {
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {processSteps.map(p => (
+          {processList.map((p: any) => (
             <div
               key={p.step}
               className="relative rounded-2xl border border-border bg-surface-raised p-7 space-y-4 card-hover-effect hover:border-white/25"
@@ -228,7 +312,7 @@ export default function HomePage() {
       </section>
 
       {/* 6. REVIEWS CAROUSEL SECTION */}
-      <ReviewsCarousel />
+      <ReviewsCarousel initialReviews={reviewsList} />
 
       {/* 7. FULL-WIDTH FAQ SECTION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 space-y-12">
@@ -239,7 +323,7 @@ export default function HomePage() {
         />
 
         <div className="w-full">
-          <Accordion items={homeFaqs} />
+          <Accordion items={faqsList} />
         </div>
       </section>
 

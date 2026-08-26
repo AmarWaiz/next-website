@@ -57,10 +57,15 @@ const enterpriseReviews: ReviewItem[] = [
   },
 ];
 
-export function ReviewsCarousel() {
+export interface ReviewsCarouselProps {
+  initialReviews?: ReviewItem[];
+}
+
+export function ReviewsCarousel({ initialReviews }: ReviewsCarouselProps) {
+  const reviews = (initialReviews && initialReviews.length > 0) ? initialReviews : enterpriseReviews;
   const [currentIndex, setCurrentIndex] = React.useState(0);
 
-  const totalReviews = enterpriseReviews.length;
+  const totalReviews = reviews.length;
 
   const handleNext = (e?: React.MouseEvent) => {
     if (e) {
@@ -86,7 +91,7 @@ export function ReviewsCarousel() {
     setCurrentIndex(idx);
   };
 
-  const activeReview = enterpriseReviews[currentIndex] ?? enterpriseReviews[0]!;
+  const activeReview = reviews[currentIndex] ?? reviews[0]!;
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 space-y-12">
@@ -141,9 +146,9 @@ export function ReviewsCarousel() {
         <div className="relative z-20 pt-8 mt-6 border-t border-border/40 flex items-center justify-between">
           {/* Indicator Dots */}
           <div className="flex items-center gap-2">
-            {enterpriseReviews.map((rev, idx) => (
+            {reviews.map((rev, idx) => (
               <button
-                key={rev.id}
+                key={rev.id || idx}
                 type="button"
                 onClick={(e) => handleSelect(idx, e)}
                 aria-label={`Go to review ${idx + 1}`}

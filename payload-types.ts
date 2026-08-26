@@ -68,6 +68,7 @@ export interface Config {
   blocks: {};
   collections: {
     users: User;
+    pages: Page;
     services: Service;
     'blog-posts': BlogPost;
     testimonials: Testimonial;
@@ -80,6 +81,7 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
     'blog-posts': BlogPostsSelect<false> | BlogPostsSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
@@ -93,8 +95,12 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'site-settings': SiteSetting;
+  };
+  globalsSelect: {
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -148,6 +154,76 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  title: string;
+  slug: string;
+  metaDescription?: string | null;
+  hero: {
+    badge?: string | null;
+    headline: string;
+    description: string;
+    primaryButton?: {
+      label?: string | null;
+      url?: string | null;
+    };
+    secondaryButton?: {
+      label?: string | null;
+      url?: string | null;
+    };
+    trustPoints?:
+      | {
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  stats?:
+    | {
+        value: string;
+        label: string;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  differentiators?:
+    | {
+        title: string;
+        description: string;
+        icon?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  processSteps?:
+    | {
+        stepNumber: string;
+        title: string;
+        description: string;
+        id?: string | null;
+      }[]
+    | null;
+  faqs?:
+    | {
+        question: string;
+        answer: string;
+        id?: string | null;
+      }[]
+    | null;
+  ctaBand?: {
+    badge?: string | null;
+    title?: string | null;
+    description?: string | null;
+    buttonLabel?: string | null;
+    buttonUrl?: string | null;
+  };
+  bodyContent?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -300,6 +376,10 @@ export interface PayloadLockedDocument {
         value: number | User;
       } | null)
     | ({
+        relationTo: 'pages';
+        value: number | Page;
+      } | null)
+    | ({
         relationTo: 'services';
         value: number | Service;
       } | null)
@@ -379,6 +459,83 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  metaDescription?: T;
+  hero?:
+    | T
+    | {
+        badge?: T;
+        headline?: T;
+        description?: T;
+        primaryButton?:
+          | T
+          | {
+              label?: T;
+              url?: T;
+            };
+        secondaryButton?:
+          | T
+          | {
+              label?: T;
+              url?: T;
+            };
+        trustPoints?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+      };
+  stats?:
+    | T
+    | {
+        value?: T;
+        label?: T;
+        description?: T;
+        id?: T;
+      };
+  differentiators?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        icon?: T;
+        id?: T;
+      };
+  processSteps?:
+    | T
+    | {
+        stepNumber?: T;
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  faqs?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  ctaBand?:
+    | T
+    | {
+        badge?: T;
+        title?: T;
+        description?: T;
+        buttonLabel?: T;
+        buttonUrl?: T;
+      };
+  bodyContent?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -545,6 +702,54 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: number;
+  brandName: string;
+  tagline?: string | null;
+  headerCta?: {
+    label?: string | null;
+    url?: string | null;
+  };
+  contactInfo?: {
+    phone?: string | null;
+    email?: string | null;
+    address?: string | null;
+  };
+  footerDescription?: string | null;
+  copyrightText?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  brandName?: T;
+  tagline?: T;
+  headerCta?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+      };
+  contactInfo?:
+    | T
+    | {
+        phone?: T;
+        email?: T;
+        address?: T;
+      };
+  footerDescription?: T;
+  copyrightText?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
