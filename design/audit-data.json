@@ -1,0 +1,81 @@
+{
+  "rootVars": {},
+  "sampled": [
+    {
+      "label": "Header",
+      "selector": "header, .site-header, .elementor-location-header",
+      "status": "Not found on home page"
+    },
+    {
+      "label": "Hero Section",
+      "selector": "section.elementor-top-section:first-of-type, .hero-section, main > section:first-child",
+      "status": "Not found on home page"
+    },
+    {
+      "label": "Hero Heading (H1)",
+      "selector": "h1",
+      "actualTag": "h1",
+      "className": "",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "color": "rgb(26, 26, 26)",
+      "borderColor": "rgb(26, 26, 26)",
+      "fontFamily": "\"DM Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\", sans-serif",
+      "fontSize": "24px",
+      "fontWeight": "600",
+      "lineHeight": "33.6px",
+      "borderRadius": "0px",
+      "padding": "0px",
+      "bgHex": "transparent",
+      "colorHex": "#1a1a1a",
+      "borderHex": "#1a1a1a"
+    },
+    {
+      "label": "Body Paragraph",
+      "selector": "p",
+      "actualTag": "p",
+      "className": "",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "color": "rgb(102, 102, 102)",
+      "borderColor": "rgb(102, 102, 102)",
+      "fontFamily": "\"DM Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\", sans-serif",
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "21px",
+      "borderRadius": "0px",
+      "padding": "0px",
+      "bgHex": "transparent",
+      "colorHex": "#666666",
+      "borderHex": "#666666"
+    },
+    {
+      "label": "Primary Button (default)",
+      "selector": "a.elementor-button, button.elementor-button, .elementor-button",
+      "status": "Not found on home page"
+    },
+    {
+      "label": "Service Card",
+      "selector": ".elementor-widget-icon-box, .elementor-widget-call-to-action, .e-con-inner > .e-con, .elementor-card",
+      "status": "Not found on home page"
+    },
+    {
+      "label": "Stat Counter",
+      "selector": ".elementor-counter, .elementor-counter-number-wrapper",
+      "status": "Not found on home page"
+    },
+    {
+      "label": "Section Heading (H2)",
+      "selector": "h2",
+      "status": "Not found on home page"
+    },
+    {
+      "label": "Borders / Dividers",
+      "selector": ".elementor-divider-separator, hr, [class*=\"divider\"]",
+      "status": "Not found on home page"
+    },
+    {
+      "label": "Footer",
+      "selector": "footer, .site-footer, .elementor-location-footer",
+      "status": "Not found on home page"
+    }
+  ]
+}
