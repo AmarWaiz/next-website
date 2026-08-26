@@ -1,4 +1,229 @@
-/* Custom Payload Admin Theme Styles */
+/* ==========================================================================
+   TECHCENTERA ENTERPRISE MISSION CONTROL - CUSTOM PAYLOAD CMS THEME
+   ========================================================================== */
+
+/* 1. Global Color Tokens & Variables */
 :root {
-  --theme-accent: #1763cc;
+  --theme-primary: #00e599 !important;
+  --theme-accent: #00e599 !important;
+  --theme-success: #00e599 !important;
+  --theme-bg: #070a12 !important;
+  --theme-text: #f0f6fc !important;
+  --theme-elevation-0: #070a12 !important;
+  --theme-elevation-50: #0b0f19 !important;
+  --theme-elevation-100: #101624 !important;
+  --theme-elevation-150: #151d30 !important;
+  --theme-elevation-200: #1b253c !important;
+  --theme-elevation-250: #222e49 !important;
+  --theme-border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+html[data-theme="dark"],
+html {
+  --theme-bg: #070a12 !important;
+  --theme-elevation-0: #070a12 !important;
+  --theme-elevation-50: #0b0f19 !important;
+  --theme-elevation-100: #101624 !important;
+  --theme-elevation-150: #151d30 !important;
+  --theme-elevation-200: #1b253c !important;
+  --theme-elevation-250: #222e49 !important;
+  --theme-border-color: rgba(255, 255, 255, 0.08) !important;
+  background-color: #070a12 !important;
+  color: #f0f6fc !important;
+}
+
+/* 2. Login Page Redesign */
+.template-minimal {
+  background: radial-gradient(circle at 50% 20%, rgba(0, 229, 153, 0.08) 0%, rgba(7, 10, 18, 1) 70%) !important;
+  min-height: 100vh !important;
+}
+
+.template-minimal .form-header {
+  position: relative;
+  text-align: center;
+  padding-bottom: 24px;
+}
+
+/* Hide default Payload SVG logo if rendered, show TechCentera brand banner */
+.graphic-logo svg,
+.payload-logo svg {
+  display: none !important;
+}
+
+.graphic-logo,
+.payload-logo {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  min-height: 48px !important;
+}
+
+.graphic-logo::after,
+.payload-logo::after {
+  content: "TC TechCentera" !important;
+  font-family: var(--font-inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif) !important;
+  font-size: 26px !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.03em !important;
+  color: #ffffff !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: linear-gradient(135deg, #ffffff 60%, #00e599 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: 0 0 30px rgba(0, 229, 153, 0.3) !important;
+}
+
+/* 3. Custom Sidebar & Navigation */
+.nav,
+.nav-sidebar,
+aside.sidebar {
+  background-color: #080c15 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+
+.nav__brand {
+  padding: 20px 16px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.nav a.nav__link {
+  color: #8b949e !important;
+  font-weight: 600 !important;
+  font-size: 13.5px !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  margin: 2px 8px !important;
+  transition: all 0.15s ease !important;
+}
+
+.nav a.nav__link:hover {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.nav a.nav__link.active {
+  color: #00e599 !important;
+  background-color: rgba(0, 229, 153, 0.1) !important;
+  border-left: 3px solid #00e599 !important;
+}
+
+/* 4. Action Buttons (Primary Emerald Style) */
+.btn--style-primary,
+button#action-save,
+.btn[type="submit"],
+.form-submit button {
+  background: linear-gradient(135deg, #00e599 0%, #00b876 100%) !important;
+  color: #070a12 !important;
+  font-weight: 800 !important;
+  font-size: 14px !important;
+  letter-spacing: -0.01em !important;
+  border-radius: 10px !important;
+  padding: 10px 22px !important;
+  border: none !important;
+  box-shadow: 0 4px 16px rgba(0, 229, 153, 0.35) !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn--style-primary:hover,
+button#action-save:hover,
+.btn[type="submit"]:hover,
+.form-submit button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(0, 229, 153, 0.5) !important;
+}
+
+/* Secondary Buttons */
+.btn--style-secondary {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: #f0f6fc !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+}
+
+.btn--style-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* 5. Inputs, Textareas, and Selects */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+  background-color: #0d1320 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #f0f6fc !important;
+  border-radius: 10px !important;
+  padding: 10px 14px !important;
+  transition: all 0.2s ease !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #00e599 !important;
+  box-shadow: 0 0 0 2px rgba(0, 229, 153, 0.25) !important;
+  outline: none !important;
+}
+
+/* 6. Document Editor Header & Table View */
+.doc-header,
+.collection-list__header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 24px 32px !important;
+}
+
+.collection-list {
+  background-color: #0b0f19 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+}
+
+table.table {
+  background-color: #0b0f19 !important;
+}
+
+table.table th {
+  background-color: #101624 !important;
+  color: #8b949e !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+table.table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+  transition: background-color 0.15s ease !important;
+}
+
+table.table tbody tr:hover {
+  background-color: rgba(0, 229, 153, 0.04) !important;
+}
+
+table.table tbody tr td a {
+  color: #f0f6fc !important;
+  font-weight: 600 !important;
+}
+
+table.table tbody tr td a:hover {
+  color: #00e599 !important;
+}
+
+/* 7. Badges & Status */
+.pill,
+.badge {
+  background-color: rgba(0, 229, 153, 0.15) !important;
+  color: #00e599 !important;
+  border: 1px solid rgba(0, 229, 153, 0.3) !important;
+  border-radius: 9999px !important;
+  font-weight: 700 !important;
 }
