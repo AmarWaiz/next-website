@@ -22,7 +22,8 @@
     "paths": {
       "@/*": ["./*"],
       "@/ui/*": ["./components/ui/*"],
-      "@/sections/*": ["./components/sections/*"]
+      "@/sections/*": ["./components/sections/*"],
+      "@payload-config": ["./payload.config.ts"]
     }
   },
   "include": [
