@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Button } from '@/ui/Button';
+import { Button } from '@/components/ui/Button';
 import { AlertTriangle, RotateCcw } from 'lucide-react';
 
 export default function GlobalError({

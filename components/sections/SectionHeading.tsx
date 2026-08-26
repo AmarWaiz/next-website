@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/ui/Badge';
+import { Badge } from '@/components/ui/Badge';
 
 export interface SectionHeadingProps {
   badge?: string;

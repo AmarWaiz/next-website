@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { Button } from '@/ui/Button';
+import { Button } from '@/components/ui/Button';
 import { ArrowRight } from 'lucide-react';
 
 export interface CTABandProps {

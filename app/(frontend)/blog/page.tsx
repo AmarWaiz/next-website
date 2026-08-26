@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { getAllBlogPosts } from '@/lib/mdx';
-import { Badge } from '@/ui/Badge';
+import { Badge } from '@/components/ui/Badge';
 import { formatDate } from '@/lib/utils';
 import { ArrowUpRight, Calendar, Clock } from 'lucide-react';
 import { CTABand } from '@/components/sections/CTABand';

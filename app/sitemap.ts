@@ -12,21 +12,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog',
     '/privacy',
     '/terms',
-  ].map(route => ({
+  ].map((route: string) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: route === '' ? 1.0 : 0.8,
   }));
 
-  const serviceRoutes = getAllServices().map(s => ({
+  const serviceRoutes = getAllServices().map((s: any) => ({
     url: `${baseUrl}/services/${s.frontmatter.slug}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.9,
   }));
 
-  const blogRoutes = getAllBlogPosts().map(p => ({
+  const blogRoutes = getAllBlogPosts().map((p: any) => ({
     url: `${baseUrl}/blog/${p.frontmatter.slug}`,
     lastModified: new Date(p.frontmatter.date),
     changeFrequency: 'monthly' as const,

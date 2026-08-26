@@ -236,6 +236,10 @@ export interface Service {
   order: number;
   tagline: string;
   shortDescription: string;
+  /**
+   * Select an uploaded image from Media or upload a new image.
+   */
+  mediaImage?: (number | null) | Media;
   heroImage?: string | null;
   includedFeatures?:
     | {
@@ -247,11 +251,11 @@ export interface Service {
     | {
         metric: string;
         label: string;
-        context: string;
+        context?: string | null;
         id?: string | null;
       }[]
     | null;
-  processSteps?:
+  stages?:
     | {
         step: string;
         title: string;
@@ -266,39 +270,6 @@ export interface Service {
         id?: string | null;
       }[]
     | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-posts".
- */
-export interface BlogPost {
-  id: number;
-  title: string;
-  slug: string;
-  category: 'Enterprise AI' | 'System Integration' | 'Technology Strategy';
-  date: string;
-  readTime?: string | null;
-  author?: string | null;
-  excerpt: string;
-  content: string;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "testimonials".
- */
-export interface Testimonial {
-  id: number;
-  quote: string;
-  author: string;
-  role: string;
-  company: string;
-  initials: string;
-  rating?: number | null;
-  verifiedTag?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -347,6 +318,41 @@ export interface Media {
       filename?: string | null;
     };
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blog-posts".
+ */
+export interface BlogPost {
+  id: number;
+  title: string;
+  slug: string;
+  category: 'Enterprise AI' | 'System Integration' | 'Technology Strategy';
+  date: string;
+  readTime?: string | null;
+  author?: string | null;
+  excerpt: string;
+  mediaImage?: (number | null) | Media;
+  coverImage?: string | null;
+  markdownContent?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials".
+ */
+export interface Testimonial {
+  id: number;
+  quote: string;
+  author: string;
+  role: string;
+  company: string;
+  initials: string;
+  rating?: number | null;
+  verifiedTag?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -548,6 +554,7 @@ export interface ServicesSelect<T extends boolean = true> {
   order?: T;
   tagline?: T;
   shortDescription?: T;
+  mediaImage?: T;
   heroImage?: T;
   includedFeatures?:
     | T
@@ -563,7 +570,7 @@ export interface ServicesSelect<T extends boolean = true> {
         context?: T;
         id?: T;
       };
-  processSteps?:
+  stages?:
     | T
     | {
         step?: T;
@@ -593,7 +600,9 @@ export interface BlogPostsSelect<T extends boolean = true> {
   readTime?: T;
   author?: T;
   excerpt?: T;
-  content?: T;
+  mediaImage?: T;
+  coverImage?: T;
+  markdownContent?: T;
   updatedAt?: T;
   createdAt?: T;
 }

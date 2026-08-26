@@ -3,10 +3,10 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getServiceBySlug, getAllServices } from '@/lib/mdx';
-import { Button } from '@/ui/Button';
-import { Badge } from '@/ui/Badge';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 import { SectionHeading } from '@/components/sections/SectionHeading';
-import { Accordion } from '@/ui/Accordion';
+import { Accordion } from '@/components/ui/Accordion';
 import { ServiceCard } from '@/components/sections/ServiceCard';
 import { CTABand } from '@/components/sections/CTABand';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
@@ -28,7 +28,7 @@ const serviceImages: Record<string, string> = {
 
 export async function generateStaticParams() {
   const services = getAllServices();
-  return services.map(s => ({
+  return services.map((s: any) => ({
     slug: s.frontmatter.slug,
   }));
 }
@@ -120,8 +120,8 @@ export default async function SingleServicePage({ params }: Props) {
   const fallbackServices = getAllServices();
   const otherServices = allCmsServices.length > 0
     ? allCmsServices
-        .filter(s => s.slug !== slug)
-        .map(s => ({
+        .filter((s: any) => s.slug !== slug)
+        .map((s: any) => ({
           title: s.title,
           slug: s.slug,
           order: s.order,
@@ -130,8 +130,8 @@ export default async function SingleServicePage({ params }: Props) {
           features: (s.includedFeatures || []).map((f: any) => typeof f === 'string' ? f : f.item),
         }))
     : fallbackServices
-        .filter(s => s.frontmatter.slug !== slug)
-        .map(s => ({
+        .filter((s: any) => s.frontmatter.slug !== slug)
+        .map((s: any) => ({
           title: s.frontmatter.title,
           slug: s.frontmatter.slug,
           order: s.frontmatter.order,
@@ -291,7 +291,7 @@ export default async function SingleServicePage({ params }: Props) {
           />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {otherServices.slice(0, 3).map(s => (
+            {otherServices.slice(0, 3).map((s: any) => (
               <ServiceCard
                 key={s.slug}
                 title={s.title}

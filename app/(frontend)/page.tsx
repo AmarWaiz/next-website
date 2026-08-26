@@ -1,11 +1,11 @@
 import Link from 'next/link';
-import { Button } from '@/ui/Button';
+import { Button } from '@/components/ui/Button';
 import { StatsStrip } from '@/components/sections/StatsStrip';
 import { SectionHeading } from '@/components/sections/SectionHeading';
 import { ServiceCard } from '@/components/sections/ServiceCard';
 import { HeroBackgroundVideo } from '@/components/sections/HeroBackgroundVideo';
 import { ReviewsCarousel } from '@/components/sections/ReviewsCarousel';
-import { Accordion } from '@/ui/Accordion';
+import { Accordion } from '@/components/ui/Accordion';
 import { CTABand } from '@/components/sections/CTABand';
 import { getAllServices } from '@/lib/mdx';
 import { ArrowRight, ShieldCheck, Database, Cpu, CheckCircle2 } from 'lucide-react';
@@ -114,7 +114,7 @@ export default async function HomePage() {
   }
 
   const reviewsList = cmsTestimonials.length > 0
-    ? cmsTestimonials.map(t => ({
+    ? cmsTestimonials.map((t: any) => ({
         id: String(t.id),
         quote: t.quote,
         author: t.author,
@@ -128,7 +128,7 @@ export default async function HomePage() {
   // Fallback to MDX services if CMS collection empty
   const fallbackServices = getAllServices();
   const servicesList = cmsServices.length > 0
-    ? cmsServices.map(s => {
+    ? cmsServices.map((s: any) => {
         let img = s.heroImage || '/images/hero-preview.jpg';
         if (s.mediaImage && typeof s.mediaImage === 'object' && s.mediaImage.url) {
           img = s.mediaImage.url;
@@ -142,7 +142,7 @@ export default async function HomePage() {
           features: (s.includedFeatures || []).map((f: any) => typeof f === 'string' ? f : f.item || f.feature),
         };
       })
-    : fallbackServices.map(s => ({
+    : fallbackServices.map((s: any) => ({
         title: s.frontmatter.title,
         slug: s.frontmatter.slug,
         order: s.frontmatter.order,
@@ -162,7 +162,7 @@ export default async function HomePage() {
     : ['Zero Vendor Lock-In', '100% Code Ownership', 'Sub-500ms Execution'];
 
   const differentiatorsList = cmsHome?.differentiators && cmsHome.differentiators.length > 0
-    ? cmsHome.differentiators.map((d: any, idx: number) => ({
+    ? cmsHome.differentiators.map((d: any) => ({
         title: d.title,
         description: d.description,
         icon: d.icon === 'database' ? Database : d.icon === 'cpu' ? Cpu : ShieldCheck,
@@ -251,7 +251,7 @@ export default async function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {servicesList.map(s => (
+          {servicesList.map((s: any) => (
             <ServiceCard
               key={s.slug}
               title={s.title}

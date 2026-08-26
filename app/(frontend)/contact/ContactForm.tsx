@@ -3,8 +3,8 @@
 import * as React from 'react';
 import { useActionState } from 'react';
 import { submitContactForm, type ActionState } from './actions';
-import { Input, Textarea, Select } from '@/ui/FormInputs';
-import { Button } from '@/ui/Button';
+import { Input, Textarea, Select } from '@/components/ui/FormInputs';
+import { Button } from '@/components/ui/Button';
 import { CheckCircle, AlertCircle, Send } from 'lucide-react';
 
 const serviceOptions = [

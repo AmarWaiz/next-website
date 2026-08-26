@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Button } from '@/ui/Button';
-import { Badge } from '@/ui/Badge';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 import { SectionHeading } from '@/components/sections/SectionHeading';
-import { Accordion } from '@/ui/Accordion';
+import { Accordion } from '@/components/ui/Accordion';
 import { CTABand } from '@/components/sections/CTABand';
 import { getAllServices } from '@/lib/mdx';
 import { ArrowRight, ArrowUpRight, CheckCircle2, AlertTriangle, Layers, Lock, Zap } from 'lucide-react';
@@ -98,7 +98,7 @@ export default async function ServicesHubPage() {
 
   const fallbackServices = getAllServices();
   const servicesList = cmsServices.length > 0
-    ? cmsServices.map(s => {
+    ? cmsServices.map((s: any) => {
         let img = s.heroImage || '/images/hero-preview.jpg';
         if (s.mediaImage && typeof s.mediaImage === 'object' && s.mediaImage.url) {
           img = s.mediaImage.url;
@@ -163,7 +163,7 @@ export default async function ServicesHubPage() {
         />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {painPoints.map(item => {
+          {painPoints.map((item: any) => {
             const Icon = item.icon;
             return (
               <div
@@ -192,7 +192,7 @@ export default async function ServicesHubPage() {
         />
 
         <div className="space-y-8">
-          {servicesList.map(service => {
+          {servicesList.map((service: any) => {
             return (
               <div
                 key={service.slug}
@@ -272,7 +272,7 @@ export default async function ServicesHubPage() {
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {capabilities.map(cap => {
+          {capabilities.map((cap: any) => {
             const Icon = cap.icon;
             return (
               <div

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Badge } from '@/ui/Badge';
+import { Badge } from '@/components/ui/Badge';
 
 export const metadata: Metadata = {
   title: 'Terms of Service',

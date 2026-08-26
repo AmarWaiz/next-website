@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { Badge } from '@/ui/Badge';
+import { Badge } from '@/components/ui/Badge';
 import { SectionHeading } from '@/components/sections/SectionHeading';
 import { ContactForm } from './ContactForm';
-import { Accordion } from '@/ui/Accordion';
+import { Accordion } from '@/components/ui/Accordion';
 import { Mail, Phone, MapPin, Clock, ShieldCheck } from 'lucide-react';
 import { getPayload } from 'payload';
 import config from '@payload-config';

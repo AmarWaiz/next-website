@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getBlogPostBySlug, getAllBlogPosts } from '@/lib/mdx';
-import { Badge } from '@/ui/Badge';
+import { Badge } from '@/components/ui/Badge';
 import { formatDate } from '@/lib/utils';
 import { CTABand } from '@/components/sections/CTABand';
 import { Calendar, Clock, ArrowLeft, ArrowUpRight, User } from 'lucide-react';

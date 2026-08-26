@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Button } from '@/ui/Button';
-import { Badge } from '@/ui/Badge';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 import { SectionHeading } from '@/components/sections/SectionHeading';
 import { StatsStrip } from '@/components/sections/StatsStrip';
 import { CTABand } from '@/components/sections/CTABand';
