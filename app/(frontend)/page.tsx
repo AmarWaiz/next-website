@@ -128,18 +128,26 @@ export default async function HomePage() {
   // Fallback to MDX services if CMS collection empty
   const fallbackServices = getAllServices();
   const servicesList = cmsServices.length > 0
-    ? cmsServices.map(s => ({
-        title: s.title,
-        slug: s.slug,
-        order: s.order,
-        shortDescription: s.shortDescription,
-        features: (s.includedFeatures || []).map((f: any) => typeof f === 'string' ? f : f.item || f.feature),
-      }))
+    ? cmsServices.map(s => {
+        let img = s.heroImage || '/images/hero-preview.jpg';
+        if (s.mediaImage && typeof s.mediaImage === 'object' && s.mediaImage.url) {
+          img = s.mediaImage.url;
+        }
+        return {
+          title: s.title,
+          slug: s.slug,
+          order: s.order,
+          shortDescription: s.shortDescription,
+          imageSrc: img,
+          features: (s.includedFeatures || []).map((f: any) => typeof f === 'string' ? f : f.item || f.feature),
+        };
+      })
     : fallbackServices.map(s => ({
         title: s.frontmatter.title,
         slug: s.frontmatter.slug,
         order: s.frontmatter.order,
         shortDescription: s.frontmatter.shortDescription,
+        imageSrc: `/images/${s.frontmatter.slug}.jpg`,
         features: s.frontmatter.includedFeatures,
       }));
 
@@ -250,6 +258,7 @@ export default async function HomePage() {
               slug={s.slug}
               order={s.order}
               shortDescription={s.shortDescription}
+              imageSrc={s.imageSrc}
               features={s.features}
             />
           ))}

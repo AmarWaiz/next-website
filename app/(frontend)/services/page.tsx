@@ -8,6 +8,10 @@ import { Accordion } from '@/ui/Accordion';
 import { CTABand } from '@/components/sections/CTABand';
 import { getAllServices } from '@/lib/mdx';
 import { ArrowRight, ArrowUpRight, CheckCircle2, AlertTriangle, Layers, Lock, Zap } from 'lucide-react';
+import { getPayload } from 'payload';
+import config from '@payload-config';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'AI & Custom Software Services Hub',
@@ -56,7 +60,7 @@ const capabilities = [
   },
 ];
 
-const hubFaqs = [
+const defaultHubFaqs = [
   {
     question: 'Can we start with a single service before expanding across operations?',
     answer:
@@ -79,15 +83,45 @@ const hubFaqs = [
   },
 ];
 
-const serviceImages: Record<string, string> = {
-  'ai-receptionist': '/images/ai-receptionist.jpg',
-  'ai-customer-support': '/images/ai-support.jpg',
-  'ai-workflow-automation': '/images/ai-workflow.jpg',
-  'custom-crm-erp': '/images/custom-crm-erp.jpg',
-};
+export default async function ServicesHubPage() {
+  let cmsServices: any[] = [];
+  try {
+    const payload = await getPayload({ config });
+    const { docs } = await payload.find({
+      collection: 'services',
+      sort: 'order',
+    });
+    cmsServices = docs || [];
+  } catch (err) {
+    console.error('Payload fetch error on Services page:', err);
+  }
 
-export default function ServicesHubPage() {
-  const services = getAllServices();
+  const fallbackServices = getAllServices();
+  const servicesList = cmsServices.length > 0
+    ? cmsServices.map(s => {
+        let img = s.heroImage || '/images/hero-preview.jpg';
+        if (s.mediaImage && typeof s.mediaImage === 'object' && s.mediaImage.url) {
+          img = s.mediaImage.url;
+        }
+        return {
+          title: s.title,
+          slug: s.slug,
+          order: s.order,
+          tagline: s.tagline,
+          shortDescription: s.shortDescription,
+          imageSrc: img,
+          features: (s.includedFeatures || []).map((f: any) => typeof f === 'string' ? f : f.item || f.feature),
+        };
+      })
+    : fallbackServices.map(s => ({
+        title: s.frontmatter.title,
+        slug: s.frontmatter.slug,
+        order: s.frontmatter.order,
+        tagline: s.frontmatter.tagline,
+        shortDescription: s.frontmatter.shortDescription,
+        imageSrc: `/images/${s.frontmatter.slug}.jpg`,
+        features: s.frontmatter.includedFeatures,
+      }));
 
   return (
     <div className="space-y-24 md:space-y-36 pb-16">
@@ -111,7 +145,7 @@ export default function ServicesHubPage() {
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
               <Link href="/contact">
-                <Button variant="accent" size="lg" className="w-full sm:w-auto text-sm font-bold gap-2 shadow-lg shadow-accent/20" rightIcon={<ArrowRight className="h-4 w-4" />}>
+                <Button variant="accent" size="lg" className="w-full sm:w-auto text-sm font-bold gap-2 shadow-lg shadow-accent/20 whitespace-nowrap" rightIcon={<ArrowRight className="h-4 w-4" />}>
                   Book a Consultation
                 </Button>
               </Link>
@@ -149,7 +183,7 @@ export default function ServicesHubPage() {
         </div>
       </section>
 
-      {/* 3. THE 4 SERVICES AS SUBSTANTIAL BEXON ROWS WITH IMAGES */}
+      {/* 3. THE 4 SERVICES AS SUBSTANTIAL ROWS WITH IMAGES */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 space-y-12">
         <SectionHeading
           badge="Core Services"
@@ -158,20 +192,18 @@ export default function ServicesHubPage() {
         />
 
         <div className="space-y-8">
-          {services.map(service => {
-            const img = serviceImages[service.frontmatter.slug] || '/images/hero-preview.jpg';
-
+          {servicesList.map(service => {
             return (
               <div
-                key={service.frontmatter.slug}
+                key={service.slug}
                 className="group rounded-3xl border border-border bg-surface-raised p-6 sm:p-8 lg:p-10 hover:border-accent/50 hover:bg-surface-card transition-all duration-300 shadow-xl"
               >
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                   {/* Left: Image preview */}
                   <div className="lg:col-span-4 relative aspect-[16/10] w-full rounded-2xl overflow-hidden border border-border/80 bg-surface">
                     <Image
-                      src={img}
-                      alt={service.frontmatter.title}
+                      src={service.imageSrc}
+                      alt={service.title}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                       sizes="(max-width: 1024px) 100vw, 33vw"
@@ -179,7 +211,7 @@ export default function ServicesHubPage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                     <div className="absolute top-3 left-3">
                       <span className="font-mono text-xs font-bold text-white px-2.5 py-1 rounded-md bg-accent/90 backdrop-blur-sm">
-                        {String(service.frontmatter.order).padStart(2, '0')}
+                        {String(service.order).padStart(2, '0')}
                       </span>
                     </div>
                   </div>
@@ -188,10 +220,10 @@ export default function ServicesHubPage() {
                   <div className="lg:col-span-5 space-y-4">
                     <div>
                       <h3 className="text-2xl sm:text-3xl font-bold text-ink group-hover:text-accent transition-colors">
-                        {service.frontmatter.title}
+                        {service.title}
                       </h3>
                       <p className="text-sm text-ink-muted leading-relaxed mt-2">
-                        {service.frontmatter.shortDescription}
+                        {service.shortDescription}
                       </p>
                     </div>
 
@@ -200,7 +232,7 @@ export default function ServicesHubPage() {
                         Included Capabilities
                       </p>
                       <ul className="space-y-1.5 text-xs sm:text-sm text-ink-muted">
-                        {service.frontmatter.includedFeatures.slice(0, 3).map((feat, idx) => (
+                        {service.features.slice(0, 3).map((feat: string, idx: number) => (
                           <li key={idx} className="flex items-start gap-2">
                             <CheckCircle2 className="h-4 w-4 text-accent shrink-0 mt-0.5" />
                             <span className="line-clamp-1">{feat}</span>
@@ -212,14 +244,15 @@ export default function ServicesHubPage() {
 
                   {/* Right: Actions */}
                   <div className="lg:col-span-3 flex flex-col justify-center items-start lg:items-end gap-3 border-t lg:border-t-0 lg:border-l border-border/60 pt-4 lg:pt-0 lg:pl-6">
-                    <Link href={`/services/${service.frontmatter.slug}`} className="w-full">
-                      <Button variant="accent" size="md" className="w-full text-xs font-bold gap-1.5 shadow-md shadow-accent/20" rightIcon={<ArrowUpRight className="h-4 w-4" />}>
-                        Explore Architecture
+                    <Link href={`/services/${service.slug}`} className="w-full">
+                      <Button variant="accent" size="md" className="w-full justify-center text-sm font-semibold gap-1.5 shadow-md shadow-accent/20 whitespace-nowrap">
+                        <span>Architecture & Specs</span>
+                        <ArrowUpRight className="h-4 w-4" />
                       </Button>
                     </Link>
                     <Link href="/contact" className="w-full">
-                      <Button variant="outline" size="md" className="w-full text-xs">
-                        Request Quote
+                      <Button variant="ghost" size="sm" className="w-full justify-center text-xs text-ink-muted hover:text-white whitespace-nowrap">
+                        Book Service Scoping
                       </Button>
                     </Link>
                   </div>
@@ -230,28 +263,28 @@ export default function ServicesHubPage() {
         </div>
       </section>
 
-      {/* 4. WHAT'S INCLUDED: 4 CAPABILITY CARDS */}
+      {/* 4. PLATFORM CAPABILITIES GRID */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 space-y-12">
         <SectionHeading
-          badge="Enterprise Standards"
-          title="Architectural Standards Included with Every Deployment"
-          description="Every system we build includes enterprise-grade security, low-latency performance, and comprehensive documentation."
+          badge="Engineering Standards"
+          title="Built to Enterprise Specifications"
+          description="Every bespoke software solution adheres to our core architectural parameters."
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {capabilities.map(c => {
-            const Icon = c.icon;
+          {capabilities.map(cap => {
+            const Icon = cap.icon;
             return (
               <div
-                key={c.title}
-                className="rounded-2xl border border-border bg-surface-raised p-7 space-y-3 card-hover-effect hover:border-accent/40"
+                key={cap.title}
+                className="rounded-2xl border border-border bg-surface-raised p-6 space-y-3 card-hover-effect"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/15 border border-accent/30 text-accent">
                   <Icon className="h-5 w-5" />
                 </div>
-                <h3 className="text-lg font-bold text-ink">{c.title}</h3>
+                <h4 className="font-bold text-ink">{cap.title}</h4>
                 <p className="text-xs sm:text-sm text-ink-muted leading-relaxed">
-                  {c.description}
+                  {cap.description}
                 </p>
               </div>
             );
@@ -259,57 +292,20 @@ export default function ServicesHubPage() {
         </div>
       </section>
 
-      {/* 5. PROCESS SECTION */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 space-y-12">
-        <SectionHeading
-          badge="Delivery Lifecycle"
-          title="From Schema Discovery to Production Autonomy"
-          description="A structured, rapid delivery model that keeps your team informed and in full control at every phase."
-        />
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="rounded-3xl border border-border bg-surface-raised p-8 space-y-3 card-hover-effect hover:border-accent/40">
-            <span className="font-mono text-3xl font-black text-accent">01</span>
-            <h3 className="text-xl font-bold text-ink">Discovery & Schema Audit</h3>
-            <p className="text-sm text-ink-muted leading-relaxed">
-              We analyze your operational workflows, database models, API access points, and security constraints.
-            </p>
-          </div>
-          <div className="rounded-3xl border border-border bg-surface-raised p-8 space-y-3 card-hover-effect hover:border-accent/40">
-            <span className="font-mono text-3xl font-black text-accent">02</span>
-            <h3 className="text-xl font-bold text-ink">Bespoke System Build</h3>
-            <p className="text-sm text-ink-muted leading-relaxed">
-              We engineer custom agentic pipelines, validation guardrails, and operator interfaces on modern stacks.
-            </p>
-          </div>
-          <div className="rounded-3xl border border-border bg-surface-raised p-8 space-y-3 card-hover-effect hover:border-accent/40">
-            <span className="font-mono text-3xl font-black text-accent">03</span>
-            <h3 className="text-xl font-bold text-ink">Governed Deployment</h3>
-            <p className="text-sm text-ink-muted leading-relaxed">
-              We deploy into your VPC, conduct load validation, and transfer 100% of source code and documentation.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* 6. FAQ */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 space-y-12">
+      {/* 5. HUB FAQ */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 space-y-10">
         <SectionHeading
           badge="Services FAQ"
-          title="Common Questions About Implementation & Integration"
-          description="Understand our deployment timelines, data privacy architecture, and technical support frameworks."
+          title="Common Questions About Our Solutions"
+          description="Architecture, integration, and ownership details."
         />
-
-        <div className="w-full">
-          <Accordion items={hubFaqs} />
+        <div className="max-w-4xl mx-auto">
+          <Accordion items={defaultHubFaqs} />
         </div>
       </section>
 
-      {/* 7. CTA BAND */}
-      <CTABand
-        title="Ready to Build Bespoke AI Software You Own?"
-        description="Schedule a technical consultation to review your existing tools, data models, and workflow opportunities."
-      />
+      {/* 6. CTA BAND */}
+      <CTABand />
     </div>
   );
 }

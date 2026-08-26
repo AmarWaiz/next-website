@@ -10,11 +10,13 @@ export const BlogPosts: CollectionConfig = {
     {
       name: 'title',
       type: 'text',
+      label: 'Article Title',
       required: true,
     },
     {
       name: 'slug',
       type: 'text',
+      label: 'URL Slug',
       required: true,
       unique: true,
       admin: {
@@ -24,6 +26,7 @@ export const BlogPosts: CollectionConfig = {
     {
       name: 'category',
       type: 'select',
+      label: 'Category',
       options: [
         { label: 'Enterprise AI', value: 'Enterprise AI' },
         { label: 'System Integration', value: 'System Integration' },
@@ -38,6 +41,7 @@ export const BlogPosts: CollectionConfig = {
     {
       name: 'date',
       type: 'date',
+      label: 'Publication Date',
       required: true,
       defaultValue: () => new Date().toISOString(),
       admin: {
@@ -47,6 +51,7 @@ export const BlogPosts: CollectionConfig = {
     {
       name: 'readTime',
       type: 'text',
+      label: 'Estimated Read Time',
       defaultValue: '4 min read',
       admin: {
         position: 'sidebar',
@@ -55,6 +60,7 @@ export const BlogPosts: CollectionConfig = {
     {
       name: 'author',
       type: 'text',
+      label: 'Author Name',
       defaultValue: 'TechCentera Engineering Team',
       admin: {
         position: 'sidebar',
@@ -63,13 +69,25 @@ export const BlogPosts: CollectionConfig = {
     {
       name: 'excerpt',
       type: 'textarea',
+      label: 'Summary / Excerpt',
       required: true,
     },
     {
-      name: 'content',
+      name: 'mediaImage',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Featured Image (Upload from Media)',
+    },
+    {
+      name: 'coverImage',
+      type: 'text',
+      label: 'Cover Image URL / Path (Fallback)',
+      defaultValue: '/images/hero-preview.jpg',
+    },
+    {
+      name: 'markdownContent',
       type: 'textarea',
-      label: 'Markdown / Article Body Content',
-      required: true,
+      label: 'Article Markdown Content',
     },
   ],
 };
