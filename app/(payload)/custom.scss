@@ -1,229 +1,748 @@
 /* ==========================================================================
-   TECHCENTERA ENTERPRISE MISSION CONTROL - CUSTOM PAYLOAD CMS THEME
+   TECHCENTERA CMS THEME
+   Mirrors the marketing site design system (app/globals.css):
+   accent #1763CC, pure-black surfaces, Inter, 12px radii.
+
+   Selectors below target Payload 3.88's real DOM:
+   .template-default > .app-header + .nav + content, .card, .table (wrapper
+   div, the <table> itself is unclassed), .pill--style-light, .btn--style-*.
    ========================================================================== */
 
-/* 1. Global Color Tokens & Variables */
-:root {
-  --theme-primary: #00e599 !important;
-  --theme-accent: #00e599 !important;
-  --theme-success: #00e599 !important;
-  --theme-bg: #070a12 !important;
-  --theme-text: #f0f6fc !important;
-  --theme-elevation-0: #070a12 !important;
-  --theme-elevation-50: #0b0f19 !important;
-  --theme-elevation-100: #101624 !important;
-  --theme-elevation-150: #151d30 !important;
-  --theme-elevation-200: #1b253c !important;
-  --theme-elevation-250: #222e49 !important;
-  --theme-border-color: rgba(255, 255, 255, 0.08) !important;
+/* --------------------------------------------------------------------------
+   1. Tokens — same values as app/globals.css :root
+   -------------------------------------------------------------------------- */
+:root,
+html[data-theme='dark'],
+html[data-theme='light'] {
+  --tc-surface: #000000;
+  --tc-surface-raised: #0a0a0a;
+  --tc-surface-card: #121212;
+  --tc-surface-elevated: #1a1a1a;
+
+  --tc-ink: #ffffff;
+  --tc-ink-muted: #a3a3a3;
+  --tc-ink-subtle: #737373;
+
+  --tc-accent: #1763cc;
+  --tc-accent-hover: #1a73e8;
+  --tc-accent-subtle: rgba(23, 99, 204, 0.12);
+  --tc-accent-glow: rgba(23, 99, 204, 0.35);
+  --tc-accent-border: rgba(23, 99, 204, 0.45);
+
+  --tc-border: rgba(255, 255, 255, 0.12);
+  --tc-border-hover: rgba(255, 255, 255, 0.24);
+
+  --tc-radius-sm: 8px;
+  --tc-radius-md: 12px;
+  --tc-radius-lg: 16px;
+  --tc-radius-xl: 24px;
+
+  /* Payload's own theme variables */
+  --theme-bg: var(--tc-surface);
+  --theme-text: var(--tc-ink);
+  --theme-input-bg: var(--tc-surface-raised);
+  --theme-primary: var(--tc-accent);
+  --theme-accent: var(--tc-accent);
+  --theme-success: var(--tc-accent);
+  --theme-border-color: var(--tc-border);
+
+  --theme-elevation-0: var(--tc-surface);
+  --theme-elevation-50: var(--tc-surface-raised);
+  --theme-elevation-100: var(--tc-surface-card);
+  --theme-elevation-150: var(--tc-surface-elevated);
+  --theme-elevation-200: #242424;
+  --theme-elevation-250: #2e2e2e;
+  --theme-elevation-300: #383838;
+  --theme-elevation-400: #525252;
+  --theme-elevation-500: #737373;
+  --theme-elevation-600: #a3a3a3;
+  --theme-elevation-800: #e5e5e5;
+  --theme-elevation-1000: #ffffff;
 }
 
-html[data-theme="dark"],
-html {
-  --theme-bg: #070a12 !important;
-  --theme-elevation-0: #070a12 !important;
-  --theme-elevation-50: #0b0f19 !important;
-  --theme-elevation-100: #101624 !important;
-  --theme-elevation-150: #151d30 !important;
-  --theme-elevation-200: #1b253c !important;
-  --theme-elevation-250: #222e49 !important;
-  --theme-border-color: rgba(255, 255, 255, 0.08) !important;
-  background-color: #070a12 !important;
-  color: #f0f6fc !important;
+html,
+html[data-theme='dark'] {
+  background-color: var(--tc-surface);
+  color: var(--tc-ink);
+  color-scheme: dark;
 }
 
-/* 2. Login Page Redesign */
-.template-minimal {
-  background: radial-gradient(circle at 50% 20%, rgba(0, 229, 153, 0.08) 0%, rgba(7, 10, 18, 1) 70%) !important;
-  min-height: 100vh !important;
+body {
+  background-color: var(--tc-surface);
+  color: var(--tc-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-.template-minimal .form-header {
-  position: relative;
-  text-align: center;
-  padding-bottom: 24px;
+/* Form controls don't inherit font-family — opt them in explicitly */
+input,
+button,
+textarea,
+select {
+  font-family: var(--font-body);
 }
 
-/* Hide default Payload SVG logo if rendered, show TechCentera brand banner */
-.graphic-logo svg,
-.payload-logo svg {
-  display: none !important;
+h1,
+h2,
+h3,
+h4,
+h5 {
+  color: var(--tc-ink);
+  letter-spacing: -0.025em;
+  font-weight: 700;
 }
 
-.graphic-logo,
-.payload-logo {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  position: relative !important;
-  min-height: 48px !important;
+:focus-visible {
+  outline: 2px solid var(--tc-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
-.graphic-logo::after,
-.payload-logo::after {
-  content: "TC TechCentera" !important;
-  font-family: var(--font-inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif) !important;
-  font-size: 26px !important;
-  font-weight: 900 !important;
-  letter-spacing: -0.03em !important;
-  color: #ffffff !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  background: linear-gradient(135deg, #ffffff 60%, #00e599 100%) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  text-shadow: 0 0 30px rgba(0, 229, 153, 0.3) !important;
+/* --------------------------------------------------------------------------
+   2. App header — the brand tile must not be clipped
+   Payload sizes .step-nav__home for an 18px SVG; our logo mark is 28px.
+   -------------------------------------------------------------------------- */
+.app-header {
+  background-color: var(--tc-surface-raised);
+  border-bottom: 1px solid var(--tc-border);
 }
 
-/* 3. Custom Sidebar & Navigation */
+.app-header__bg {
+  background-color: transparent !important;
+}
+
+.step-nav {
+  gap: 10px;
+  align-items: center;
+  color: var(--tc-ink-muted);
+  font-size: 13px;
+}
+
+.step-nav__home {
+  width: auto !important;
+  height: auto !important;
+  flex-shrink: 0;
+  overflow: visible !important;
+}
+
+.step-nav__home > span,
+.step-nav__home svg {
+  width: auto;
+  height: auto;
+  overflow: visible;
+}
+
+.step-nav a,
+.step-nav__last {
+  color: var(--tc-ink-muted);
+  font-weight: 500;
+}
+
+.step-nav a:hover {
+  color: var(--tc-ink);
+}
+
+.step-nav__last {
+  color: var(--tc-ink);
+}
+
+.app-header__account img {
+  border: 1px solid var(--tc-border);
+}
+
+/* --------------------------------------------------------------------------
+   3. Sidebar navigation
+   Payload marks the current section by rendering it as a <div class="nav__link">
+   holding a .nav__link-indicator, instead of an <a>. Styling only `a.nav__link`
+   is what left the active item unpadded and unhighlighted.
+   -------------------------------------------------------------------------- */
 .nav,
-.nav-sidebar,
-aside.sidebar {
-  background-color: #080c15 !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.07) !important;
+.nav__scroll {
+  background-color: var(--tc-surface-raised) !important;
+  border-right: 1px solid var(--tc-border);
 }
 
-.nav__brand {
-  padding: 20px 16px !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+.nav-group__toggle {
+  padding: 0 16px !important;
 }
 
-.nav a.nav__link {
-  color: #8b949e !important;
+.nav-group__label {
+  color: var(--tc-ink-subtle) !important;
+  font-size: 11px !important;
   font-weight: 600 !important;
-  font-size: 13.5px !important;
-  border-radius: 8px !important;
-  padding: 8px 12px !important;
-  margin: 2px 8px !important;
-  transition: all 0.15s ease !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
-.nav a.nav__link:hover {
-  color: #ffffff !important;
-  background-color: rgba(255, 255, 255, 0.05) !important;
+.nav__link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  color: var(--tc-ink-muted);
+  font-size: 13.5px;
+  font-weight: 500;
+  border-radius: var(--tc-radius-sm);
+  padding: 9px 12px !important;
+  margin: 2px 10px;
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
 
-.nav a.nav__link.active {
-  color: #00e599 !important;
-  background-color: rgba(0, 229, 153, 0.1) !important;
-  border-left: 3px solid #00e599 !important;
+.nav__link:hover {
+  color: var(--tc-ink);
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
-/* 4. Action Buttons (Primary Emerald Style) */
+/* Active section — a <div>, not an <a> */
+div.nav__link {
+  color: var(--tc-ink);
+  font-weight: 600;
+  background-color: var(--tc-accent-subtle);
+  cursor: default;
+}
+
+/* Payload's own indicator element, restyled as an accent rail */
+.nav__link-indicator {
+  position: absolute;
+  left: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 18px;
+  border-radius: 3px;
+  background-color: var(--tc-accent);
+}
+
+/* --------------------------------------------------------------------------
+   4. Dashboard — collection cards get the site's card-hover treatment
+   -------------------------------------------------------------------------- */
+/* Top padding comes from .gutter (section 11) — nothing extra here */
+
+.collections__label,
+.dashboard h2 {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--tc-ink-subtle) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 14px;
+}
+
+.collections__card-list {
+  gap: 16px;
+}
+
+.card {
+  position: relative;
+  background-color: var(--tc-surface-card);
+  border: 1px solid var(--tc-border);
+  border-radius: var(--tc-radius-lg);
+  padding: 22px 20px;
+  min-height: 104px;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease,
+    background-color 0.25s ease;
+}
+
+/* Accent wash that reveals on hover, echoing the site's card-hover-effect */
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--tc-accent-subtle) 0%, transparent 55%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.card--has-onclick:hover {
+  transform: translateY(-3px);
+  border-color: var(--tc-border-hover);
+  background-color: var(--tc-surface-elevated);
+}
+
+.card--has-onclick:hover::after {
+  opacity: 1;
+}
+
+.card__title {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: var(--tc-ink) !important;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.card__actions {
+  position: relative;
+  z-index: 2;
+}
+
+/* --------------------------------------------------------------------------
+   5. Buttons — mirrors components/ui/Button.tsx variants
+   -------------------------------------------------------------------------- */
+.btn {
+  border-radius: var(--tc-radius-md);
+  font-weight: 500;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease,
+    transform 0.2s ease, color 0.2s ease;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+/* `accent` variant — primary actions & form submits */
 .btn--style-primary,
+.form-submit button,
 button#action-save,
-.btn[type="submit"],
-.form-submit button {
-  background: linear-gradient(135deg, #00e599 0%, #00b876 100%) !important;
-  color: #070a12 !important;
-  font-weight: 800 !important;
+.btn[type='submit'] {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--tc-accent) !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  border: 1px solid transparent !important;
+  border-radius: var(--tc-radius-md) !important;
+  min-height: 44px !important;
+  padding: 0 24px !important;
   font-size: 14px !important;
-  letter-spacing: -0.01em !important;
-  border-radius: 10px !important;
-  padding: 10px 22px !important;
-  border: none !important;
-  box-shadow: 0 4px 16px rgba(0, 229, 153, 0.35) !important;
-  cursor: pointer !important;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  font-weight: 500 !important;
+  box-shadow: 0 4px 6px -1px rgba(23, 99, 204, 0.2) !important;
 }
 
 .btn--style-primary:hover,
+.form-submit button:hover,
 button#action-save:hover,
-.btn[type="submit"]:hover,
-.form-submit button:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 24px rgba(0, 229, 153, 0.5) !important;
+.btn[type='submit']:hover {
+  background-color: var(--tc-accent-hover) !important;
+  box-shadow: 0 10px 15px -3px var(--tc-accent-glow) !important;
 }
 
-/* Secondary Buttons */
+.btn--style-primary .btn__label,
+button#action-save .btn__label {
+  color: #ffffff !important;
+  font-weight: 500;
+}
+
+/* `secondary` variant */
 .btn--style-secondary {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  color: #f0f6fc !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  border-radius: 10px !important;
-  font-weight: 600 !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--tc-surface-raised) !important;
+  color: var(--tc-ink) !important;
+  border: 1px solid var(--tc-border) !important;
+  border-radius: var(--tc-radius-md) !important;
+  min-height: 44px !important;
+  font-weight: 500 !important;
 }
 
 .btn--style-secondary:hover {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  border-color: rgba(255, 255, 255, 0.25) !important;
+  background-color: var(--tc-surface-card) !important;
+  border-color: var(--tc-border-hover) !important;
+  color: #ffffff !important;
 }
 
-/* 5. Inputs, Textareas, and Selects */
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="number"],
+/* Pill buttons — e.g. "Create New" beside a list title.
+   Needs inline-flex: a min-height on a block button leaves the label sitting
+   at the top of the box instead of centred in it. */
+.btn--style-pill {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--tc-accent-subtle) !important;
+  color: var(--tc-ink) !important;
+  border: 1px solid var(--tc-accent-border) !important;
+  border-radius: 9999px !important;
+  min-height: 30px !important;
+  padding: 0 14px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+}
+
+.btn--style-pill:hover {
+  background-color: var(--tc-accent) !important;
+  border-color: var(--tc-accent) !important;
+  color: #ffffff !important;
+}
+
+.btn--style-pill .btn__label {
+  color: inherit !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+
+/* Round icon buttons — the "+" on dashboard cards.
+   They sit in a flex row, so without a fixed box they stretch into ovals. */
+.btn--round,
+.btn--icon-only {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  align-self: center;
+  width: 32px !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 0 !important;
+  border-radius: 9999px !important;
+  border-color: var(--tc-border) !important;
+  color: var(--tc-ink-muted) !important;
+}
+
+.btn--round .btn__content,
+.btn--icon-only .btn__content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn--round:hover,
+.btn--icon-only:hover {
+  background-color: var(--tc-accent) !important;
+  border-color: var(--tc-accent) !important;
+  color: #ffffff !important;
+}
+
+.btn--round:hover .stroke,
+.btn--icon-only:hover .stroke {
+  stroke: #ffffff !important;
+}
+
+/* Full-width submit on the login form */
+.template-minimal .form-submit button {
+  width: 100% !important;
+}
+
+/* --------------------------------------------------------------------------
+   6. Pills — Payload's neutral `pill--style-light` must stay neutral
+   -------------------------------------------------------------------------- */
+.pill--style-light {
+  background-color: var(--tc-surface-card) !important;
+  color: var(--tc-ink-muted) !important;
+  border: 1px solid var(--tc-border) !important;
+  border-radius: 9999px !important;
+  font-weight: 500 !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.pill--style-light:hover {
+  background-color: var(--tc-surface-elevated) !important;
+  border-color: var(--tc-border-hover) !important;
+  color: var(--tc-ink) !important;
+}
+
+.pill--style-light .pill__label {
+  color: inherit !important;
+}
+
+/* --------------------------------------------------------------------------
+   7. Inputs & search
+   The search magnifier is a static flex sibling the input slides over, so the
+   input needs left padding to clear it — a blanket `padding` override hides it.
+   -------------------------------------------------------------------------- */
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='number'],
+input[type='date'],
 textarea,
-select {
-  background-color: #0d1320 !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  color: #f0f6fc !important;
-  border-radius: 10px !important;
-  padding: 10px 14px !important;
-  transition: all 0.2s ease !important;
+select,
+.rs__control {
+  background-color: var(--tc-surface-raised) !important;
+  border: 1px solid var(--tc-border) !important;
+  color: var(--tc-ink) !important;
+  border-radius: var(--tc-radius-md) !important;
+  padding: 12px 14px !important;
+  font-size: 14px !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease !important;
+}
+
+input:hover,
+textarea:hover,
+select:hover,
+.rs__control:hover {
+  border-color: var(--tc-border-hover) !important;
 }
 
 input:focus,
 textarea:focus,
-select:focus {
-  border-color: #00e599 !important;
-  box-shadow: 0 0 0 2px rgba(0, 229, 153, 0.25) !important;
+select:focus,
+.rs__control--is-focused {
+  border-color: var(--tc-accent) !important;
+  box-shadow: 0 0 0 3px var(--tc-accent-subtle) !important;
   outline: none !important;
 }
 
-/* 6. Document Editor Header & Table View */
-.doc-header,
-.collection-list__header {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-  padding: 24px 32px !important;
+::placeholder {
+  color: var(--tc-ink-subtle) !important;
 }
 
-.collection-list {
-  background-color: #0b0f19 !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  border-radius: 16px !important;
-  overflow: hidden !important;
+.search-bar {
+  gap: 12px;
 }
 
-table.table {
-  background-color: #0b0f19 !important;
+.search-bar .icon--search {
+  z-index: 2;
 }
 
-table.table th {
-  background-color: #101624 !important;
-  color: #8b949e !important;
+.search-bar .icon--search .stroke {
+  stroke: var(--tc-ink-subtle);
+}
+
+/* Clear the 40px magnifier column.
+   Needs to out-specify the `input[type='text']` rule above (0,1,1). */
+.search-bar input.search-filter__input,
+input.search-filter__input {
+  padding-left: 44px !important;
+  height: 46px !important;
+}
+
+.field-label,
+label {
+  color: var(--tc-ink-muted) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+a {
+  color: var(--tc-ink-muted);
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--tc-accent);
+}
+
+/* --------------------------------------------------------------------------
+   8. Login screen
+   -------------------------------------------------------------------------- */
+.template-minimal {
+  background:
+    radial-gradient(circle at 50% 18%, var(--tc-accent-subtle) 0%, transparent 62%),
+    var(--tc-surface) !important;
+  min-height: 100vh !important;
+}
+
+.template-minimal__wrap {
+  background-color: var(--tc-surface-raised);
+  border: 1px solid var(--tc-border);
+  border-radius: var(--tc-radius-xl);
+  padding: 40px 36px;
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.6);
+}
+
+.login__brand {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+/* --------------------------------------------------------------------------
+   9. List views — header, table, empty state, pagination
+   NOTE: the <table> element itself carries no class; `.table` is its wrapper.
+   -------------------------------------------------------------------------- */
+.list-header__title {
+  font-size: 26px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.025em;
+}
+
+.list-header {
+  margin-bottom: 20px;
+}
+
+/* Only the outer element is the card. `.table-wrap` is nested inside it, so
+   bordering both produced a doubled 1px edge. */
+.collection-list__tables {
+  border: 1px solid var(--tc-border);
+  border-radius: var(--tc-radius-lg);
+  overflow: hidden;
+  background-color: var(--tc-surface-raised);
+}
+
+.table-wrap {
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+/* Payload puts a 20px bottom margin on the scroll container. Outside a card
+   that's just spacing; inside one it renders as an empty strip under the last
+   row — the outer margin below already provides the separation. */
+.collection-list__tables .table {
+  margin-bottom: 0;
+}
+
+.table table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: transparent;
+}
+
+.table thead th {
+  background-color: var(--tc-surface-card) !important;
+  color: var(--tc-ink-muted) !important;
   font-size: 11px !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.06em !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--tc-border) !important;
+  padding: 12px 16px !important;
 }
 
-table.table tbody tr {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
-  transition: background-color 0.15s ease !important;
+.table tbody td {
+  padding: 14px 16px !important;
+  font-size: 14px;
+  color: var(--tc-ink-muted);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-table.table tbody tr:hover {
-  background-color: rgba(0, 229, 153, 0.04) !important;
+.table tbody tr {
+  transition: background-color 0.15s ease;
 }
 
-table.table tbody tr td a {
-  color: #f0f6fc !important;
+.table tbody tr:hover {
+  background-color: var(--tc-accent-subtle);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody td a {
+  color: var(--tc-ink) !important;
+  font-weight: 500;
+  text-decoration: none !important;
+}
+
+.table tbody td a:hover {
+  color: var(--tc-accent) !important;
+  text-decoration: none !important;
+}
+
+.sort-column__label {
+  color: var(--tc-ink-muted);
+}
+
+/* Empty state */
+.collection-list__no-results,
+.no-results {
+  background-color: var(--tc-surface-raised);
+  border: 1px dashed var(--tc-border);
+  border-radius: var(--tc-radius-lg);
+  padding: 48px 32px;
+  text-align: center;
+}
+
+.collection-list__no-results h1,
+.no-results h1 {
+  font-size: 20px !important;
+  margin-bottom: 8px;
+}
+
+.collection-list__no-results p,
+.no-results p {
+  color: var(--tc-ink-muted);
+  margin-bottom: 20px;
+}
+
+/* Pagination controls */
+.per-page,
+.paginator {
+  color: var(--tc-ink-muted);
+}
+
+.popup-button--background {
+  background-color: var(--tc-surface-card) !important;
+  border: 1px solid var(--tc-border) !important;
+  border-radius: var(--tc-radius-sm) !important;
+  color: var(--tc-ink-muted) !important;
+}
+
+.popup-button--background:hover {
+  border-color: var(--tc-border-hover) !important;
+  color: var(--tc-ink) !important;
+}
+
+.paginator__page--is-current,
+.per-page__button-active {
+  color: var(--tc-accent) !important;
   font-weight: 600 !important;
 }
 
-table.table tbody tr td a:hover {
-  color: #00e599 !important;
+/* --------------------------------------------------------------------------
+   10. Document editor
+   -------------------------------------------------------------------------- */
+.doc-header,
+.doc-controls {
+  border-bottom: 1px solid var(--tc-border);
 }
 
-/* 7. Badges & Status */
-.pill,
-.badge {
-  background-color: rgba(0, 229, 153, 0.15) !important;
-  color: #00e599 !important;
-  border: 1px solid rgba(0, 229, 153, 0.3) !important;
-  border-radius: 9999px !important;
-  font-weight: 700 !important;
+.doc-controls__controls {
+  gap: 10px;
+}
+
+.field-type {
+  margin-bottom: 20px;
+}
+
+.collapsible,
+.array-field__draggable-rows,
+.group-field {
+  background-color: var(--tc-surface-raised);
+  border: 1px solid var(--tc-border);
+  border-radius: var(--tc-radius-md);
+}
+
+.popup__content {
+  background-color: var(--tc-surface-card) !important;
+  border: 1px solid var(--tc-border) !important;
+  border-radius: var(--tc-radius-md) !important;
+  box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Status pills (published / draft) keep the accent treatment */
+.status .pill,
+.pill--style-success {
+  background-color: var(--tc-accent-subtle) !important;
+  color: #ffffff !important;
+  border: 1px solid var(--tc-accent-border) !important;
+}
+
+/* --------------------------------------------------------------------------
+   11. Spacing rhythm
+   Payload ships `.gutter` with `padding: 0 60px 60px` — no top padding at all,
+   so page titles sit flush against the header. These restore vertical
+   breathing room proportional to the 60px horizontal gutter.
+   -------------------------------------------------------------------------- */
+.gutter {
+  padding-top: 32px;
+}
+
+/* The sidebar's own padding-top is what clears the fixed header — overriding it
+   pushes the first label behind the header, so add the breathing room to the
+   inner wrapper instead. */
+.nav__wrap {
+  padding-top: 20px;
+}
+
+/* Title block → controls → table → pagination */
+.list-header {
+  margin-bottom: 24px !important;
+}
+
+.search-bar {
+  margin-bottom: 4px;
+}
+
+.collection-list__tables {
+  margin-bottom: 24px !important;
+}
+
+/* Document editing screens get the same top breathing room */
+.doc-header {
+  padding-top: 4px;
 }
